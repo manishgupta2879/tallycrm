@@ -3,11 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Http\Requests\StoreCompanyRequest;
+use App\Http\Requests\UpdateCompanyRequest;
+use App\Services\CompanyService; // Added
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Gate;
 
 class CompanyController extends Controller
 {
+    protected $companyService;
+
+    public function __construct(CompanyService $companyService)
+    {
+        $this->companyService = $companyService;
+    }
+
     /**
      * Display a listing of the companies.
      */
@@ -17,11 +28,7 @@ class CompanyController extends Controller
 
         $search = $request->get('search', '');
 
-        $companies = Company::when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('pid', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
-            })
+        $companies = Company::search($search)
             ->orderBy('name')
             ->paginate(15)
             ->withQueryString();
@@ -42,44 +49,15 @@ class CompanyController extends Controller
     /**
      * Store a newly created company.
      */
-    public function store(Request $request)
+    public function store(StoreCompanyRequest $request)
     {
-        Gate::authorize('company.create');
-
-        $validated = $request->validate([
-            'pid'          => 'required|string|max:50|unique:companies,pid',
-            'name'         => 'required|string|max:255',
-            'contact_name' => 'nullable|string|max:255',
-            'designation'  => 'nullable|string|max:255',
-            'email'        => 'nullable|email|max:255',
-            'mobile'       => 'nullable|string|max:20',
-            'territory'    => 'nullable|string|max:500',
-            'status'       => 'required|in:Active,Inactive',
-            'd_types'      => 'nullable|array',
-            'd_parameter'  => 'nullable|array',
-            'c_urls'       => 'nullable|array',
-            'no_of_urls'   => 'nullable|integer|min:0|max:10',
-        ]);
-
-        if (isset($validated['d_types'])) {
-            $validated['d_types'] = array_values(array_filter($validated['d_types']));
+        try {
+            $this->companyService->createCompany($request->validated());
+            return redirect()->route('companies.index')
+                ->with('success', 'Company created successfully.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
-        if (isset($validated['d_parameter'])) {
-            $validated['d_parameter'] = array_values(array_filter($validated['d_parameter']));
-        }
-        if (isset($validated['c_urls'])) {
-             $validated['c_urls'] = array_filter($validated['c_urls'], function($urlData) {
-                 return !empty($urlData['url']);
-             });
-             $validated['c_urls'] = array_values($validated['c_urls']);
-        }
-
-        $company = Company::create($validated);
-
-        logActivity("Create Company (ID - {$company->id}, Name - {$company->name})", 'CREATE', 'Company', $company->id);
-
-        return redirect()->route('companies.index')
-            ->with('success', 'Company created successfully.');
     }
 
     /**
@@ -95,45 +73,33 @@ class CompanyController extends Controller
     /**
      * Update the specified company.
      */
-    public function update(Request $request, Company $company)
+    public function update(UpdateCompanyRequest $request, Company $company)
+    {
+        try {
+            $urlsLoaded = $request->input('urls_loaded') === '1';
+            $this->companyService->updateCompany($company, $request->validated(), $urlsLoaded);
+
+            return redirect()->route('companies.index')
+                ->with('success', 'Company updated successfully.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Decrypt and return the URLs.
+     */
+    public function decryptUrls(Company $company)
     {
         Gate::authorize('company.edit');
 
-        $validated = $request->validate([
-            'pid'          => 'required|string|max:50|unique:companies,pid,' . $company->id,
-            'name'         => 'required|string|max:255',
-            'contact_name' => 'nullable|string|max:255',
-            'designation'  => 'nullable|string|max:255',
-            'email'        => 'nullable|email|max:255',
-            'mobile'       => 'nullable|string|max:20',
-            'territory'    => 'nullable|string|max:500',
-            'status'       => 'required|in:Active,Inactive',
-            'd_types'      => 'nullable|array',
-            'd_parameter'  => 'nullable|array',
-            'c_urls'       => 'nullable|array',
-            'no_of_urls'   => 'nullable|integer|min:0|max:10',
-        ]);
-
-        if (isset($validated['d_types'])) {
-            $validated['d_types'] = array_values(array_filter($validated['d_types']));
+        try {
+            $rawUrls = $company->getRawOriginal('c_urls');
+            $urls = $rawUrls ? json_decode(Crypt::decryptString($rawUrls), true) : [];
+            return response()->json(['success' => true, 'urls' => $urls]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to decrypt URLs.'], 400);
         }
-        if (isset($validated['d_parameter'])) {
-            $validated['d_parameter'] = array_values(array_filter($validated['d_parameter']));
-        }
-        
-        if (isset($validated['c_urls'])) {
-             $validated['c_urls'] = array_filter($validated['c_urls'], function($urlData) {
-                 return !empty($urlData['url']);
-             });
-             $validated['c_urls'] = array_values($validated['c_urls']);
-        }
-
-        $company->update($validated);
-
-        logActivity("Update Company (ID - {$company->id}, Name - {$company->name})", 'UPDATE', 'Company', $company->id);
-
-        return redirect()->route('companies.index')
-            ->with('success', 'Company updated successfully.');
     }
 
     /**
@@ -143,11 +109,12 @@ class CompanyController extends Controller
     {
         Gate::authorize('company.delete');
 
-        logActivity("Delete Company (ID - {$company->id}, Name - {$company->name})", 'DELETE', 'Company', $company->id);
-
-        $company->delete();
-
-        return redirect()->route('companies.index')
-            ->with('success', 'Company deleted successfully.');
+        try {
+            $this->companyService->deleteCompany($company);
+            return redirect()->route('companies.index')
+                ->with('success', 'Company deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }

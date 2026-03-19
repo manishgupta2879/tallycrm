@@ -15,11 +15,12 @@
                             <span>Add User</span>
                         </a>
                     @endcan
-                    @can('users.export')
+                    {{-- Export button commented out --}}
+                    {{-- @can('users.export')
                         <x-primary-outline-button onclick="exportExcel()">
                             <i data-lucide="file-down" class="w-4 h-4"></i> Excel
                         </x-primary-outline-button>
-                    @endcan
+                    @endcan --}}
                 </div>
                 {{-- ... (search form) ... --}}
                 <div class="flex items-center space-x-1">

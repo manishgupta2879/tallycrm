@@ -17,6 +17,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
+    <!-- Flatpickr (Datepicker) -->
+    <link rel="stylesheet" href="{{ asset('assets/css/flatpickr.min.css') }}">
+    <script src="{{ asset('assets/js/flatpickr.js') }}"></script>
+
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/images/logo/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/logo/favicon-32x32.png') }}">
@@ -58,10 +62,16 @@
                 if (submitText && submitLoader) {
                     submitText.classList.add('hidden');
                     submitLoader.classList.remove('hidden');
-                    submitLoader.innerHTML = '<span class="inline-block animate-spin mr-2">⟳</span>Submitting...';
+                    submitLoader.innerHTML = `<svg class="animate-spin h-4 w-4 text-white inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>Submitting...`;
                 } else {
                     const originalText = btn.innerText || 'Submit';
-                    btn.innerHTML = `<span class="inline-block animate-spin mr-2">⟳</span>${originalText}...`;
+                    btn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>${originalText}...`;
                 }
 
                 const form = btn.closest('form');

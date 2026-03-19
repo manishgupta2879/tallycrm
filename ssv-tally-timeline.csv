@@ -1,0 +1,68 @@
+,Module,Task,Hours,Days
+,,,,
+,Company,Migration + Model,Complete,
+,Company,Create with urls encryption,Complete,
+,Company,Edit with url encryption,Complete,
+,Company,Delete + List,Complete,
+,Company,Export,3,0.43
+,Company,Module Testing,Complete,
+,,,,
+,Users,Migration + Model,Complete,
+,Users,Create,Complete,
+,Users,Edit,Complete,
+,Users,Delete + List,Complete,
+,Users,Export,3,0.43
+,Users,Module Testing,Complete,
+,,,,
+,Roles & permissions,Migration + Model,Complete,
+,Roles & permissions,Create,Complete,
+,Roles & permissions,Edit,Complete,
+,Roles & permissions,Delete + List,Complete,
+,Roles & permissions,Export,2,0.29
+,Roles & permissions,Module Testing,Complete,
+,,,,
+,,,,
+,Distributor,Migration + Model,3,
+,Distributor,Create,6,
+,Distributor,Edit,4,
+,Distributor,Delete + List,4,
+,Distributor,Export,2,
+,Distributor,Module Testing,1,
+,Distributor,Total,20,2.86
+,,,,
+,API,Setup (Routes + Controller),3,
+,API,JSON Capture/Read,2,
+,API,Validation,1,
+,API,Multi-table Storage,3,
+,API,Error Handling,1,
+,API,Module Testing,1,
+,API,Total,11,1.57
+,,,,
+,Tally Logs,Tally Logs Setup + Store,3,
+,Tally Logs,List + Distributor-wise,4,
+,Tally Logs,Export,2,
+,Tally Logs,Module Testing,1,
+,Tally Logs,Total,10,1.43
+,,,,
+,User Logs,Sessoin List,4,
+,User Logs,Session Activity Preview,5,
+,User Logs,Total,9,1.29
+,,,,
+,opportunity Category,Migration + Model,1,
+,opportunity Category,Create,1.5,
+,opportunity Category,Edit,1,
+,opportunity Category,Delete + List,2,
+,opportunity Category,Export,1.5,
+,opportunity Category,Total,7,1
+,,,,
+,opportunity,Migration + Model,1,
+,opportunity,Create,2,
+,opportunity,Edit,1.5,
+,opportunity,Delete + List,2,
+,opportunity,Export,1.5,
+,opportunity,Total,8,1.14
+,,,,
+,,,,
+,All,Integration Testing + Fixes,4,0.57
+,,,,
+,,,77,11

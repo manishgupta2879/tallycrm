@@ -12,21 +12,20 @@
                 </div>
             </div>
 
+
             <div class="p-4">
                 <form action="{{ route('distributors.store') }}" method="POST">
                     @csrf
-
-                    <!-- Row 1: Distributor Code, Name, Type, Status -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
                         <!-- Distributor Code -->
                         <div>
                             <label class="block text-gray-700 font-semibold text-xs mb-1">
                                 Distributor Code<span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="pid" value="{{ old('pid') }}"
+                            <input type="text" name="code" value="{{ old('code') }}" required
                                 class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                 placeholder="e.g. DIST001">
-                            @error('pid')
+                            @error('code')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -35,60 +34,45 @@
                             <label class="block text-gray-700 font-semibold text-xs mb-1">
                                 Name<span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="name" value="{{ old('name') }}"
+                            <input type="text" name="name" value="{{ old('name') }}" required
                                 class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                 placeholder="Distributor name">
                             @error('name')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                        <!-- Distributor Type -->
-                        <div>
-                            <label class="block text-gray-700 font-semibold text-xs mb-1">Distributor Type</label>
-                            <select name="distributor_type" id="distributor_type"
-                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
-                                <option value="">-- Select Type --</option>
-                            </select>
-                            @error('distributor_type')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <!-- Status -->
+                        <!-- Company -->
                         <div>
                             <label class="block text-gray-700 font-semibold text-xs mb-1">
-                                Status<span class="text-red-500">*</span>
+                                Principal Company<span class="text-red-500">*</span>
                             </label>
-                            <select name="status" id="status"
+                            <select name="company_code" id="company_code" onchange="fetchCompanyDetails(this.value)"
+                                required
                                 class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
-                                <option value="Active" {{ old('status', 'Active') === 'Active' ? 'selected' : '' }}>Active
-                                </option>
-                                <option value="Inactive" {{ old('status') === 'Inactive' ? 'selected' : '' }}>Inactive
-                                </option>
-                            </select>
-                            @error('status')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <!-- Row 2: Principal Company Code -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
-                        <div>
-                            <label class="block text-gray-700 font-semibold text-xs mb-1">Principal Company Code</label>
-                            <select name="company_pid" id="company_pid"
-                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic"
-                                onchange="fetchCompanyDetails(this.value)">
                                 <option value="">-- Select Company --</option>
                                 @foreach ($companies as $company)
-                                    <option value="{{ $company->pid }}" {{ old('company_pid') === $company->pid ? 'selected' : '' }}>
-                                        {{ $company->pid }} - {{ $company->name }}
+                                    <option value="{{ $company->pid }}" {{ old('company_code') == $company->pid ? 'selected' : '' }}>
+                                        {{ $company->name }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('company_pid')
+                            @error('company_code')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+                        <!-- Distributor Type -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold text-xs mb-1">Distributor Type<span
+                                    class="text-red-500">*</span></label>
+                            <select name="type" id="type" required
+                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
+                                <option value="">-- Select Type --</option>
+                            </select>
+                            @error('type')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                     </div>
 
                     <!-- Dynamic Parameters -->
@@ -109,143 +93,484 @@
                         </div>
                     </div>
 
-                    <!-- Dynamic URLs -->
-                    <div id="urls-section" class="mb-3 hidden">
-                        <p
-                            class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
-                            Distributor URLs & Credentials
-                        </p>
-                        <div id="urls-container" class="space-y-4">
-                            <!-- Populated via AJAX -->
-                        </div>
-                    </div>
 
                     <!-- Divider: Address -->
-                    <div class="border-t border-gray-200 pt-3 mb-3">
-                        <p class="text-xs font-semibold text-gray-600 mb-2">Distributor Address</p>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
-                            <!-- City -->
-                            <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">City</label>
-                                <input type="text" name="city" value="{{ old('city') }}"
-                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                    placeholder="City">
-                                @error('city')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <!-- State -->
-                            <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">State</label>
-                                <input type="text" name="state" value="{{ old('state') }}"
-                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                    placeholder="State">
-                                @error('state')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <!-- Pin Code -->
-                            <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">Pin Code</label>
-                                <input type="text" name="pin_code" value="{{ old('pin_code') }}"
-                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                    placeholder="Pin Code">
-                                @error('pin_code')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="block text-gray-700 font-semibold text-xs mb-1">Address</label>
-                            <textarea name="address" rows="2"
+                    <div class="mb-3">
+                        <p
+                            class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
+                            Address Details</p>
+                        <div>
+                            <label class="block text-gray-700 font-semibold text-xs mb-1">Address<span
+                                    class="text-red-500">*</span></label>
+                            <textarea name="address" rows="2" required
                                 class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                 placeholder="Street / Colony / Area">{{ old('address') }}</textarea>
                             @error('address')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <!-- GST No -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3 mb-3">
+                            <!-- Country -->
                             <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">GST No</label>
-                                <input type="text" name="gst_no" value="{{ old('gst_no') }}"
+                                <label for="country" class="block text-gray-700 font-semibold text-xs mb-1">Country<span
+                                        class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <select name="country" id="country" required
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
+                                        <option value="">-- Select Country --</option>
+                                        @foreach ($countries as $c)
+                                            <option value="{{ $c->id }}" {{ old('country') == $c->id ? 'selected' : '' }}>
+                                                {{ $c->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('country')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Region -->
+                            <div>
+                                <label for="region" class="block text-gray-700 font-semibold text-xs mb-1">
+                                    Region<span class="text-red-500">*</span>
+                                    <span id="region-loader" class="hidden ml-1 inline-block">
+                                        <svg class="animate-spin h-3 w-3 text-blue-500 inline"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                    </span>
+                                </label>
+                                <select name="region" id="region" required
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
+                                    <option value="">-- Select Region --</option>
+                                </select>
+                                @error('region')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- State -->
+                            <div>
+                                <label for="state" class="block text-gray-700 font-semibold text-xs mb-1">
+                                    State<span class="text-red-500">*</span>
+                                    <span id="state-loader" class="hidden ml-1 inline-block">
+                                        <svg class="animate-spin h-3 w-3 text-blue-500 inline"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                    </span>
+                                </label>
+                                <select name="state" id="state" required
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
+                                    <option value="">-- Select State --</option>
+                                </select>
+                                @error('state')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- City -->
+                            <div>
+                                <label for="city" class="block text-gray-700 font-semibold text-xs mb-1">
+                                    City<span class="text-red-500">*</span>
+                                    <span id="city-loader" class="hidden ml-1 inline-block">
+                                        <svg class="animate-spin h-3 w-3 text-blue-500 inline"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                    </span>
+                                </label>
+                                <select name="city" id="city" required
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
+                                    <option value="">-- Select City --</option>
+                                </select>
+                                @error('city')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Pin Code<span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="pincode" value="{{ old('pincode') }}" required
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    placeholder="Pin Code">
+                                @error('pincode')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">GST No<span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="gst_number" value="{{ old('gst_number') }}" required
                                     class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                     placeholder="GST Number">
-                                @error('gst_no')
+                                @error('gst_number')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             <!-- PAN No -->
                             <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">PAN No</label>
-                                <input type="text" name="pan_no" value="{{ old('pan_no') }}"
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">PAN No<span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="pan_number" value="{{ old('pan_number') }}" required
                                     class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                     placeholder="PAN Number">
-                                @error('pan_no')
+                                @error('pan_number')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
+
                     </div>
 
                     <!-- Divider: Contact Details -->
-                    <div class="border-t border-gray-200 pt-3 mb-3">
-                        <p class="text-xs font-semibold text-gray-600 mb-2">Distributor Contact Details</p>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div class="mb-3">
+                        <p
+                            class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
+                            Contact Details</p>
+                        <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-3">
                             <!-- Contact Name -->
                             <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">Name</label>
-                                <input type="text" name="contact_name" value="{{ old('contact_name') }}"
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Name<span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="contact_name[]" value="{{ old('contact_name.0') }}" required
                                     class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                     placeholder="Contact name">
-                                @error('contact_name')
+                                @error('contact_name.0')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             <!-- Designation -->
                             <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">Designation</label>
-                                <input type="text" name="designation" value="{{ old('designation') }}"
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Designation<span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="designation[]" value="{{ old('designation.0') }}" required
                                     class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                     placeholder="Designation">
-                                @error('designation')
+                                @error('designation.0')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             <!-- Email -->
                             <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">Email</label>
-                                <input type="email" name="email" value="{{ old('email') }}"
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Email<span
+                                        class="text-red-500">*</span></label>
+                                <input type="email" name="email[]" value="{{ old('email.0') }}" required
                                     class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                     placeholder="email@example.com">
-                                @error('email')
+                                @error('email.0')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             <!-- Mobile -->
                             <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">Mobile</label>
-                                <input type="text" name="mobile" value="{{ old('mobile') }}"
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Mobile<span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="mobile[]" value="{{ old('mobile.0') }}" maxlength="10"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '');" required
                                     class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                     placeholder="Mobile number">
-                                @error('mobile')
+                                @error('mobile.0')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Location<span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" name="location[]" value="{{ old('location.0') }}" required
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    placeholder="Location">
+                                @error('location.0')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <button type="button" class="btn-primary mt-5" onclick="addContact()">
+                                    <i data-lucide="plus" class="h-4 w-4"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                        <div id="contacts-container">
+                            @if(old('contact_name') && count(old('contact_name')) > 1)
+                                @for($i = 1; $i < count(old('contact_name')); $i++)
+                                    <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-3 mt-2">
+                                        <div>
+                                            <input type="text" name="contact_name[]" value="{{ old('contact_name.' . $i) }}"
+                                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                                placeholder="Contact name" required>
+                                            @error('contact_name.' . $i) <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <input type="text" name="designation[]" value="{{ old('designation.' . $i) }}"
+                                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                                placeholder="Designation" required>
+                                            @error('designation.' . $i) <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <input type="email" name="email[]" value="{{ old('email.' . $i) }}"
+                                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                                placeholder="email@example.com" required>
+                                            @error('email.' . $i) <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                        </div>
+                                        <div>
+                                            <input type="text" name="mobile[]" value="{{ old('mobile.' . $i) }}" maxlength="10"
+                                                oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                                placeholder="Mobile number" required>
+                                            @error('mobile.' . $i) <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                        </div>
+                                        <div>
+                                            <input type="text" name="location[]" value="{{ old('location.' . $i) }}"
+                                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                                placeholder="Location" required>
+                                            @error('location.' . $i) <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <button type="button" class="btn-danger" onclick="removeContact(this)"><i
+                                                data-lucide="trash" class="h-4 w-4"></i></button>
+                                    </div>
+                                @endfor
+                            @endif
+                        </div>
+
+                    </div>
+                    <div class="mb-3">
+                        <p
+                            class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
+                            Tally Details</p>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <!-- Tally Serial No -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Serial No</label>
+                                <input type="text" value="{{ old('tally_serial') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                    placeholder="Tally serial no" disabled>
+                                <input type="hidden" name="tally_serial" value="{{ old('tally_serial') }}">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Version</label>
+                                <input type="text" value="{{ old('tally_version') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                    placeholder="Tally version" disabled>
+                                <input type="hidden" name="tally_version" value="{{ old('tally_version') }}">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Release</label>
+                                <input type="text" value="{{ old('tally_release') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                    placeholder="Tally release" disabled>
+                                <input type="hidden" name="tally_release" value="{{ old('tally_release') }}">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Expiry</label>
+                                <div class="relative">
+                                    <input type="text" value="{{ old('tally_expiry') }}"
+                                        class="w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                        placeholder="Tally expiry" disabled>
+                                    <div
+                                        class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="tally_expiry" value="{{ old('tally_expiry') }}">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Edition</label>
+                                <input type="text" value="{{ old('tally_edition') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                    placeholder="Tally edition" disabled>
+                                <input type="hidden" name="tally_edition" value="{{ old('tally_edition') }}">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Net Id</label>
+                                <input type="text" value="{{ old('tally_net_id') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                    placeholder="Tally net id" disabled>
+                                <input type="hidden" name="tally_net_id" value="{{ old('tally_net_id') }}">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">TCP Version</label>
+                                <input type="text" value="{{ old('tcp_version') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                    placeholder="TCP version" disabled>
+                                <input type="hidden" name="tcp_version" value="{{ old('tcp_version') }}">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">TCP Source</label>
+                                <input type="text" value="{{ old('tcp_source') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                    placeholder="TCP source" disabled>
+                                <input type="hidden" name="tcp_source" value="{{ old('tcp_source') }}">
+                            </div>
+                            <!-- Tally Users -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Tally No of Users
+                                    Editable</label>
+                                <input type="text" name="tally_users" value="{{ old('tally_users') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    placeholder="Tally no of users editable">
+                                @error('tally_users')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <!-- Tally Deployed -->
+                            <div>
+                                <div class="grid grid-cols-1 md:grid-cols-[auto_1fr]">
+                                    <div class="pr-3">
+                                        <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Deployed
+                                            on</label>
+                                        <select name="tally_deployed" id="tally_deployed"
+                                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic"
+                                            onchange="handleTallyDeployedChange(this)">
+                                            @foreach($deploymentOptions as $value => $label)
+                                                <option value="{{ $value }}" {{ old('tally_deployed', 'cloud') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('tally_deployed')
+                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div id="no_of_computers_container" class="hidden">
+                                        <label class="block text-gray-700 font-semibold text-xs mb-1 text-end">No. of
+                                            Computers</label>
+                                        <input type="text" name="no_of_computers" value="{{ old('no_of_computers') }}"
+                                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
+                                    </div>
+                                    <div id="existing_provider_container" class="hidden">
+                                        <label class="block text-gray-700 font-semibold text-xs mb-1 text-end">Existing
+                                            Service Provider</label>
+                                        <input type="text" name="existing_provider" value="{{ old('existing_provider') }}"
+                                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tally Data Volume -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Data Volume</label>
+                                <input type="text" name="tally_data_volume" value="{{ old('tally_data_volume') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    placeholder="Tally Data Volume">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Cloud
+                                    Opportunity</label>
+                                <select name="tally_cloud" id="tally_cloud"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
+                                    <option value="1" {{ old('tally_cloud', '1') === '1' ? 'selected' : '' }}>Yes
+                                    </option>
+                                    <option value="0" {{ old('tally_cloud', '0') === '0' ? 'selected' : '' }}>No
+                                    </option>
+                                </select>
+                                @error('tally_cloud')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                    <div class="mb-3">
+                        <p
+                            class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
+                            Additional Details</p>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <!-- Rollout Request Date -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Date of Rollout Request
+                                    Receive</label>
+                                <div class="relative">
+                                    <input type="text" name="rollout_request_date" value="{{ old('rollout_request_date') }}"
+                                        class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
+                                    <div
+                                        class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- TCP Generated Date -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Date of TCP Generated</label>
+                                <div class="relative">
+                                    <input type="text" name="tcp_generated_date" value="{{ old('tcp_generated_date') }}"
+                                        class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
+                                    <div
+                                        class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Rollout Done Date -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Date of Rollout Done</label>
+                                <div class="relative">
+                                    <input type="text" name="rollout_done_date" value="{{ old('rollout_done_date') }}"
+                                        class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
+                                    <div
+                                        class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Rollout Done By -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Rollout Done By</label>
+                                <input type="text" name="rollout_done_by" value="{{ old('rollout_done_by') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
+                            </div>
+                            <!-- Rollout Remarks -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Remarks of rollout</label>
+                                <input type="text" name="rollout_remarks" value="{{ old('rollout_remarks') }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">Remarks Date</label>
+                                <div class="relative">
+                                    <input type="text" name="remarks_date" value="{{ old('remarks_date') }}"
+                                        class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
+                                    <div
+                                        class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Status -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs">
+                                    Status<span class="text-red-500">*</span>
+                                </label>
+                                <select name="status" id="status" required
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
+                                    @foreach($statusOptions as $option)
+                                        <option value="{{ $option }}" {{ old('status', 'Active') === $option ? 'selected' : '' }}>
+                                            {{ $option }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('status')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
                     </div>
-
-                    <!-- Distributor Location -->
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold text-xs mb-1">Distributor Location</label>
-                        <input type="text" name="distributor_location" value="{{ old('distributor_location') }}"
-                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                            placeholder="e.g. Zone / Region / GPS coordinates">
-                        @error('distributor_location')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
                     <!-- Buttons -->
                     <div class="flex items-center justify-end space-x-2">
                         <x-secondary-button type="reset">
@@ -256,7 +581,14 @@
                                 <i data-lucide="save" class="h-4 w-4"></i> Submit
                             </span>
                             <span class="submit-loader hidden flex items-center gap-1">
-                                <i data-lucide="loader" class="h-4 w-4 animate-spin"></i> Submitting...
+                                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg> Submitting...
                             </span>
                         </x-primary-button>
                     </div>
@@ -271,25 +603,155 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            initSelect2();
+
+            // Initialize Flatpickr for dates
+            flatpickr(".datepicker", {
+                dateFormat: "d/m/Y",
+                allowInput: true
+            });
+
+            // If company is already selected (e.g. after validation error)
+            const initialCompany = $('#company_code').val();
+            if (initialCompany) {
+                fetchCompanyDetails(initialCompany, "{{ old('type') }}");
+            }
+
+            // Restore chained geo on validation error
+            const oldCountry = '{{ old('country') }}';
+            const oldRegion = '{{ old('region') }}';
+            const oldState = '{{ old('state') }}';
+            const oldCity = '{{ old('city') }}';
+
+            if (oldCountry) {
+                loadRegions(oldCountry, oldRegion, function () {
+                    if (oldRegion) {
+                        loadStates(oldRegion, oldState, function () {
+                            if (oldState) {
+                                loadCities(oldState, oldCity);
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Tally Deployed on init
+            const tallyDeployed = $('#tally_deployed').val();
+            if (tallyDeployed === 'local') {
+                $('#no_of_computers_container').removeClass('hidden');
+                $('#existing_provider_container').addClass('hidden');
+            } else {
+                $('#no_of_computers_container').addClass('hidden');
+                $('#existing_provider_container').removeClass('hidden');
+            }
+        });
+
+        function initSelect2() {
             $('.select2-basic').select2({
                 allowClear: false,
                 width: '100%',
                 containerCssClass: 'text-xs',
                 selectionCssClass: 'text-xs'
             });
+        }
 
-            // If company is already selected (e.g. after validation error)
-            const initialCompany = $('#company_pid').val();
-            if (initialCompany) {
-                fetchCompanyDetails(initialCompany, "{{ old('distributor_type') }}");
-            }
+        // ─── Geo Chained Dropdowns ───────────────────────────────────────────────
+
+        $('#country').on('change', function () {
+            const countryPid = $(this).val();
+            // Reset downstream
+            resetSelect('region', '-- Select Region --');
+            resetSelect('state', '-- Select State --');
+            resetSelect('city', '-- Select City --');
+            if (!countryPid) return;
+            loadRegions(countryPid);
         });
+
+        $('#region').on('change', function () {
+            const regionPid = $(this).val();
+            resetSelect('state', '-- Select State --');
+            resetSelect('city', '-- Select City --');
+            if (!regionPid) return;
+            loadStates(regionPid);
+        });
+
+        $('#state').on('change', function () {
+            const statePid = $(this).val();
+            resetSelect('city', '-- Select City --');
+            if (!statePid) return;
+            loadCities(statePid);
+        });
+
+        function resetSelect(id, placeholder) {
+            $('#' + id).html('<option value="">' + placeholder + '</option>').trigger('change.select2');
+        }
+
+        function loadRegions(countryPid, preselectPid = null, callback = null) {
+            $('#region-loader').removeClass('hidden');
+            $.get(`/distributors/geo/regions/${countryPid}`, function (data) {
+                let html = '<option value="">-- Select Region --</option>';
+                data.forEach(function (item) {
+                    const sel = (preselectPid && item.id == preselectPid) ? 'selected' : '';
+                    html += `<option value="${item.id}" ${sel}>${item.name}</option>`;
+                });
+                $('#region').html(html).trigger('change.select2');
+                if (preselectPid) $('#region').val(preselectPid).trigger('change.select2');
+                if (callback) callback();
+            }).always(function () {
+                $('#region-loader').addClass('hidden');
+            });
+        }
+
+        function loadStates(regionPid, preselectPid = null, callback = null) {
+            $('#state-loader').removeClass('hidden');
+            $.get(`/distributors/geo/states/${regionPid}`, function (data) {
+                let html = '<option value="">-- Select State --</option>';
+                data.forEach(function (item) {
+                    const sel = (preselectPid && item.id == preselectPid) ? 'selected' : '';
+                    html += `<option value="${item.id}" ${sel}>${item.name}</option>`;
+                });
+                $('#state').html(html).trigger('change.select2');
+                if (preselectPid) $('#state').val(preselectPid).trigger('change.select2');
+                if (callback) callback();
+            }).always(function () {
+                $('#state-loader').addClass('hidden');
+            });
+        }
+
+        function loadCities(statePid, preselectPid = null) {
+            $('#city-loader').removeClass('hidden');
+            $.get(`/distributors/geo/cities/${statePid}`, function (data) {
+                let html = '<option value="">-- Select City --</option>';
+                data.forEach(function (item) {
+                    const sel = (preselectPid && item.id == preselectPid) ? 'selected' : '';
+                    html += `<option value="${item.id}" ${sel}>${item.name}</option>`;
+                });
+                $('#city').html(html).trigger('change.select2');
+                if (preselectPid) $('#city').val(preselectPid).trigger('change.select2');
+            }).always(function () {
+                $('#city-loader').addClass('hidden');
+            });
+        }
+
+        // ─── Tally Deployed ──────────────────────────────────────────────────────
+
+        function handleTallyDeployedChange(selectElement) {
+            const selectedValue = selectElement.value;
+            if (selectedValue === 'local') {
+                $('#no_of_computers_container').removeClass('hidden');
+                $('#existing_provider_container').addClass('hidden');
+            } else {
+                $('#no_of_computers_container').addClass('hidden');
+                $('#existing_provider_container').removeClass('hidden');
+            }
+        }
+
+        // ─── Company Details ─────────────────────────────────────────────────────
 
         function fetchCompanyDetails(companyPid, selectedType = null) {
             if (!companyPid) {
-                $('#distributor_type').html('<option value="">-- Select Type --</option>');
+                $('#type').html('<option value="">-- Select Type --</option>').trigger('change.select2');
                 $('#parameters-section').addClass('hidden');
-                $('#urls-section').addClass('hidden');
                 return;
             }
 
@@ -305,12 +767,12 @@
                             typeHtml += `<option value="${type}" ${selected}>${type}</option>`;
                         });
                     }
-                    $('#distributor_type').html(typeHtml);
+                    $('#type').html(typeHtml).trigger('change.select2');
 
                     // Populate Parameters
                     let hasParams = false;
                     for (let i = 1; i <= 10; i++) {
-                        const label = data.parameters[i];
+                        const label = data.parameters[i - 1];
                         if (label) {
                             $(`#param-label-${i}`).text(label);
                             $(`#param-group-${i}`).removeClass('hidden');
@@ -320,48 +782,43 @@
                         }
                     }
 
-                    if (hasParams) {
-                        $('#parameters-section').removeClass('hidden');
-                    } else {
-                        $('#parameters-section').addClass('hidden');
-                    }
-
-                    // Populate URLs
-                    const urlsContainer = document.getElementById('urls-container');
-                    urlsContainer.innerHTML = '';
-                    if (data.c_urls && data.c_urls.length > 0) {
-                        data.c_urls.forEach((urlData, i) => {
-                            const urlDiv = document.createElement('div');
-                            urlDiv.className = 'p-3 border border-gray-200 rounded bg-gray-50';
-                            urlDiv.innerHTML = `
-                                    <div class="mb-2">
-                                        <label class="block text-gray-700 font-bold text-xs mb-1">URL ${i + 1}: <span class="text-blue-600">${urlData.url}</span></label>
-                                        <input type="hidden" name="c_urls[${i}][url]" value="${urlData.url}">
-                                    </div>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                        ${(urlData.fields || []).map((field, j) => `
-                                            <div>
-                                                <label class="block text-gray-700 font-semibold text-[10px] mb-1">${field.key}</label>
-                                                <input type="hidden" name="c_urls[${i}][fields][${j}][key]" value="${field.key}">
-                                                <input type="text" name="c_urls[${i}][fields][${j}][value]" value="${field.value || ''}" 
-                                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                                    placeholder="Enter ${field.key}">
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                `;
-                            urlsContainer.appendChild(urlDiv);
-                        });
-                        $('#urls-section').removeClass('hidden');
-                    } else {
-                        $('#urls-section').addClass('hidden');
-                    }
+                    $('#parameters-section').toggleClass('hidden', !hasParams);
                     lucide.createIcons();
                 },
                 error: function () {
                     console.error('Failed to fetch company details');
                 }
             });
+        }
+
+        // ─── Contact Rows ────────────────────────────────────────────────────────
+
+        function addContact() {
+            const container = document.getElementById('contacts-container');
+            const div = document.createElement('div');
+            div.className = "grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-3 mt-2";
+            div.innerHTML = `
+                            <div><input type="text" name="contact_name[]" value="" class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Contact name" required></div>
+                            <div><input type="text" name="designation[]" value="" class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Designation" required></div>
+                            <div><input type="email" name="email[]" value="" class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="email@example.com" required></div>
+                            <div><input type="text" name="mobile[]" value="" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Mobile number" required></div>
+                            <div><input type="text" name="location[]" value="" class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Location" required></div>
+                            <button type="button" class="btn-danger" onclick="removeContact(this)"><i data-lucide="trash" class="h-4 w-4"></i></button>
+                        `;
+            container.appendChild(div);
+            lucide.createIcons();
+        }
+
+        function removeContact(button) {
+            const div = button.parentElement;
+            div.remove();
+        }
+
+        function setLoading(btn) {
+            btn.querySelector('.submit-text').classList.add('hidden');
+            btn.querySelector('.submit-loader').classList.remove('hidden');
+            btn.disabled = true;
+            btn.closest('form').submit();
         }
     </script>
 @endsection

@@ -121,37 +121,39 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <p
-                            class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
-                            Distributor Types
-                        </p>
-                        <div id="types-container" class="space-y-2 mb-2">
-                            <div class="flex items-center space-x-2">
-                                <input type="text" name="d_types[]"
-                                    class="w-1/3 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                    placeholder="Type name (e.g. Retailer)">
-                                <button type="button" class="btn-primary py-1 px-2" onclick="addType()">
-                                    <i data-lucide="plus" class="h-3 w-3"></i>
-                                </button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="mb-2">
+                            <p
+                                class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
+                                Distributor Types
+                            </p>
+                            <div id="types-container" class="space-y-2 mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <input type="text" name="d_types[]"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        placeholder="Type name (e.g. Retailer)">
+                                    <button type="button" class="btn-primary py-1 px-2" onclick="addType()">
+                                        <i data-lucide="plus" class="h-3 w-3"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <p
-                            class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
-                            Distributor Parameters (Max 10)
-                        </p>
-                        <div id="parameters-container" class="space-y-2 mb-2">
-                            <div class="flex items-center space-x-2">
-                                <input type="text" name="d_parameter[]"
-                                    class="w-1/3 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                    placeholder="Parameter Label (e.g. VAT Number)">
-                                <button type="button" id="add-parameter-btn" class="btn-primary py-1 px-2"
-                                    onclick="addParameter()">
-                                    <i data-lucide="plus" class="h-3 w-3"></i>
-                                </button>
+                        <div class="mb-2">
+                            <p
+                                class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
+                                Distributor Parameters (Max 10)
+                            </p>
+                            <div id="parameters-container" class="space-y-2 mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <input type="text" name="d_parameter[]"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        placeholder="Parameter Label (e.g. VAT Number)">
+                                    <button type="button" id="add-parameter-btn" class="btn-primary py-1 px-2"
+                                        onclick="addParameter()">
+                                        <i data-lucide="plus" class="h-3 w-3"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -171,22 +173,24 @@
                                 @endfor
                             </select>
                         </div>
-                        <div id="urls-configuration" class="space-y-4">
-                            <!-- Dynamic URL inputs will appear here -->
-                        </div>
+                        <div id="urls-configuration"
+                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4"></div>
                     </div>
 
                     <!-- Buttons -->
                     <div class="flex items-center justify-end space-x-2">
-                        <x-secondary-button type="reset">
-                            <i data-lucide="refresh-cw" class="h-4 w-4"></i> Reset
-                        </x-secondary-button>
+                        <!-- <x-secondary-button type="reset">
+                                                                    <i data-lucide="refresh-cw" class="h-4 w-4"></i> Reset
+                                                                </x-secondary-button> -->
                         <x-primary-button type="submit" id="submitBtn" onclick="setLoading(this)" class="whitespace-nowrap">
                             <span class="submit-text flex items-center gap-1">
                                 <i data-lucide="save" class="h-4 w-4"></i> Submit
                             </span>
                             <span class="submit-loader hidden flex items-center gap-1">
-                                <i data-lucide="loader" class="h-4 w-4 animate-spin"></i> Submitting...
+                                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg> Submitting...
                             </span>
                         </x-primary-button>
                     </div>
@@ -214,9 +218,9 @@
             const div = document.createElement('div');
             div.className = 'flex items-center space-x-2';
             div.innerHTML = `
-                    <input type="text" name="d_types[]" class="w-1/3 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Type name (e.g. Wholesaler)">
-                    <button type="button" class="btn-danger py-1 px-2" onclick="removeElement(this, 'types')">
-                        <i data-lucide="minus" class="h-3 w-3"></i>
+                    <input type="text" name="d_types[]" class="flex-1 min-w-0 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Type name (e.g. Wholesaler)">
+                    <button type="button" class="bg-red-500 text-white hover:bg-red-600 py-1 px-3 rounded text-xs flex items-center justify-center gap-1 shadow-sm flex-shrink-0" onclick="removeElement(this, 'types')">
+                        <i data-lucide="trash-2" class="h-3 w-3"></i>
                     </button>
                 `;
             container.appendChild(div);
@@ -235,11 +239,11 @@
             const div = document.createElement('div');
             div.className = 'flex items-center space-x-2';
             div.innerHTML = `
-                    <input type="text" name="d_parameter[]" class="w-1/3 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Parameter Label">
-                    <button type="button" class="btn-danger py-1 px-2" onclick="removeElement(this, 'params')">
-                        <i data-lucide="minus" class="h-3 w-3"></i>
-                    </button>
-                `;
+                                                                                                                                <input type="text" name="d_parameter[]" class="flex-1 min-w-0 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Parameter Label">
+                                                                                                                                <button type="button" class="bg-red-500 text-white hover:bg-red-600 py-1 px-3 rounded text-xs flex items-center justify-center gap-1 shadow-sm flex-shrink-0" onclick="removeElement(this, 'params')">
+                                                                                                                                    <i data-lucide="trash-2" class="h-3 w-3"></i>
+                                                                                                                                </button>
+                                                                                                                            `;
             container.appendChild(div);
             lucide.createIcons();
 
@@ -258,7 +262,7 @@
             }
         }
 
-        let prevUrlCount = 0;
+        let urlIndexCounter = 0;
 
         function generateUrlInputs() {
             const count = parseInt(document.getElementById('no_of_urls').value);
@@ -275,30 +279,53 @@
                 for (let i = currentCount - 1; i >= count; i--) {
                     currentBlocks[i].remove();
                 }
+                updateUrlLabels();
             } else if (count > currentCount) {
                 // Add new ones
                 for (let i = currentCount; i < count; i++) {
+                    const idx = urlIndexCounter++;
                     const urlDiv = document.createElement('div');
-                    urlDiv.className = 'p-3 border border-gray-200 rounded bg-gray-50 url-block';
+                    urlDiv.className = 'p-3 border border-gray-200 rounded bg-gray-50 url-block relative';
                     urlDiv.innerHTML = `
+                        <button type="button" class="absolute top-[-11px] right-[-11px] bg-gray-500 text-white hover:bg-red-600 rounded-full shadow-sm p-1" onclick="removeUrlBlock(this)" title="Remove URL">
+                            <i data-lucide="x" class="h-4 w-4"></i>
+                        </button>
                         <div class="mb-2">
-                            <label class="block text-gray-700 font-semibold text-xs mb-1">URL ${i + 1}</label>
-                            <input type="text" name="c_urls[${i}][url]" class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="https://example.com">
-                        </div>
-                        <div id="fields-container-${i}" class="ml-4 space-y-2">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="text-xs font-semibold text-gray-600">Fields (Max 12)</span>
-                                <button type="button" class="btn-primary py-0.5 px-2 text-[10px]" onclick="addField(${i})">
+                            <label class="block text-gray-700 font-semibold text-xs mb-1 url-label">URL ${idx + 1}</label>
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <input type="text" name="c_urls[${idx}][url]" class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="https://example.com">
+                                <button type="button" class="btn-primary py-0.5 px-2 text-[10px] flex-shrink-0" onclick="addField(${idx})">
                                     <i data-lucide="plus" class="h-3 w-3"></i> Add Field
                                 </button>
                             </div>
                         </div>
+                        <div id="fields-container-${idx}" class="space-y-2">
+                        </div>
                     `;
                     container.appendChild(urlDiv);
                 }
+                updateUrlLabels();
                 lucide.createIcons();
             }
-            prevUrlCount = count;
+        }
+
+        function removeUrlBlock(button) {
+            if (confirm('Are you sure you want to remove this URL configuration?')) {
+                button.closest('.url-block').remove();
+                updateUrlLabels();
+                const currentCount = document.querySelectorAll('.url-block').length;
+                document.getElementById('no_of_urls').value = currentCount;
+            }
+        }
+
+        function updateUrlLabels() {
+            const blocks = document.querySelectorAll('.url-block');
+            blocks.forEach((block, index) => {
+                const label = block.querySelector('.url-label');
+                if (label) {
+                    label.textContent = 'URL ' + (index + 1);
+                }
+            });
         }
 
         function addField(urlIndex) {
@@ -313,12 +340,12 @@
             const fieldRow = document.createElement('div');
             fieldRow.className = 'flex items-center space-x-2 field-row';
             fieldRow.innerHTML = `
-                    <input type="text" name="c_urls[${urlIndex}][fields][${currentFields}][key]" class="w-1/3 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Key (e.g. username)">
-                    <input type="text" name="c_urls[${urlIndex}][fields][${currentFields}][value]" class="w-1/3 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Value (e.g. admin)">
-                    <button type="button" class="btn-danger py-1 px-2" onclick="this.parentElement.remove()">
-                        <i data-lucide="minus" class="h-3 w-3"></i>
-                    </button>
-                `;
+                                                                                                                                <input type="text" name="c_urls[${urlIndex}][fields][${currentFields}][key]" class="flex-1 min-w-0 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Key">
+                                                                                                                                <input type="text" name="c_urls[${urlIndex}][fields][${currentFields}][value]" class="flex-1 min-w-0 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600" placeholder="Value">
+                                                                                                                                <button type="button" class="bg-red-500 text-white hover:bg-red-600 py-1 px-2 rounded flex-shrink-0 flex items-center justify-center shadow-sm" onclick="this.parentElement.remove()" title="Remove Field">
+                                                                                                                                    <i data-lucide="trash-2" class="h-3 w-3"></i>
+                                                                                                                                </button>
+                                                                                                                            `;
             container.appendChild(fieldRow);
             lucide.createIcons();
         }

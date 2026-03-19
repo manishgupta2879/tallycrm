@@ -2,13 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
 use App\Models\Distributor;
+use App\Models\Company;
+use App\Models\Geo;
+use App\Models\Contact;
+use App\Http\Requests\StoreDistributorRequest;
+use App\Http\Requests\UpdateDistributorRequest;
+use App\Services\DistributorService; // Added
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DistributorController extends Controller
 {
+    protected $distributorService;
+
+    public function __construct(DistributorService $distributorService)
+    {
+        $this->distributorService = $distributorService;
+    }
+
     /**
      * Display a listing of the distributors.
      */
@@ -16,14 +30,10 @@ class DistributorController extends Controller
     {
         Gate::authorize('distributor.view');
 
-        $search = $request->get('search', '');
+        $search = $request->input('search');
 
-        $distributors = Distributor::when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('pid', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('mobile', 'like', "%{$search}%");
-            })
+        $distributors = Distributor::with(['contacts', 'company', 'geoRegion', 'geoState', 'geoCity'])
+            ->search($search)
             ->orderBy('name')
             ->paginate(15)
             ->withQueryString();
@@ -37,147 +47,96 @@ class DistributorController extends Controller
     public function create()
     {
         Gate::authorize('distributor.create');
-
-        $companies = Company::orderBy('name')->get();
-        return view('distributors.create', compact('companies'));
+        $companies = Company::where('status', 'Active')->get();
+        $countries = Geo::where('nature', 'Country')->get();
+        $deploymentOptions = ['local' => 'Local', 'cloud' => 'Cloud'];
+        $statusOptions = ['Active' => 'Active', 'Inactive' => 'Inactive'];
+        return view('distributors.create', compact('companies', 'countries', 'deploymentOptions', 'statusOptions'));
     }
 
     /**
      * Store a newly created distributor.
      */
-    public function store(Request $request)
+    public function store(StoreDistributorRequest $request)
     {
-        Gate::authorize('distributor.create');
-
-        $validated = $request->validate([
-            'pid'                   => 'required|string|max:50|unique:distributors,pid',
-            'name'                  => 'required|string|max:255',
-            'distributor_type'      => 'nullable|string|max:255',
-            'company_pid'           => 'nullable|string|max:50',
-            'address'               => 'nullable|string',
-            'city'                  => 'nullable|string|max:100',
-            'state'                 => 'nullable|string|max:100',
-            'pin_code'              => 'nullable|string|max:20',
-            'gst_no'                => 'nullable|string|max:50',
-            'pan_no'                => 'nullable|string|max:20',
-            'contact_name'          => 'nullable|string|max:255',
-            'designation'           => 'nullable|string|max:255',
-            'email'                 => 'nullable|email|max:255',
-            'mobile'                => 'nullable|string|max:20',
-            'distributor_location'  => 'nullable|string|max:500',
-            'status'                => 'required|in:Active,Inactive',
-            'c_urls'                => 'nullable|array',
-        ]);
-
-        // Collect parameters into JSON
-        $d_parameters = [];
-        for ($i = 1; $i <= 10; $i++) {
-            if ($request->has("d_parameter_$i")) {
-                $d_parameters[$i] = $request->input("d_parameter_$i");
-            }
+        try {
+            $this->distributorService->createDistributor($request->validated());
+            return redirect()->route('distributors.index')->with('success', 'Distributor created successfully.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
-        $validated['d_parameters'] = $d_parameters;
-
-        $distributor = Distributor::create($validated);
-
-        logActivity("Create Distributor (ID - {$distributor->id}, Name - {$distributor->name})", 'CREATE', 'Distributor', $distributor->id);
-
-        return redirect()->route('distributors.index')
-            ->with('success', 'Distributor created successfully.');
     }
 
     /**
      * Show the form for editing the specified distributor.
      */
-    public function edit(Distributor $distributor)
+    public function edit($id)
     {
         Gate::authorize('distributor.edit');
 
-        $companies = Company::orderBy('name')->get();
-        return view('distributors.edit', compact('distributor', 'companies'));
+        $distributor = Distributor::with('contacts')->findOrFail($id);
+
+        return view('distributors.edit', compact('distributor'));
     }
 
     /**
-     * Update the specified distributor.
+     * Update the specified distributor in storage.
      */
-    public function update(Request $request, Distributor $distributor)
+    public function update(UpdateDistributorRequest $request, $id)
     {
-        Gate::authorize('distributor.edit');
+        $distributor = Distributor::findOrFail($id);
 
-        $validated = $request->validate([
-            'pid'                   => 'required|string|max:50|unique:distributors,pid,' . $distributor->id,
-            'name'                  => 'required|string|max:255',
-            'distributor_type'      => 'nullable|string|max:255',
-            'company_pid'           => 'nullable|string|max:50',
-            'address'               => 'nullable|string',
-            'city'                  => 'nullable|string|max:100',
-            'state'                 => 'nullable|string|max:100',
-            'pin_code'              => 'nullable|string|max:20',
-            'gst_no'                => 'nullable|string|max:50',
-            'pan_no'                => 'nullable|string|max:20',
-            'contact_name'          => 'nullable|string|max:255',
-            'designation'           => 'nullable|string|max:255',
-            'email'                 => 'nullable|email|max:255',
-            'mobile'                => 'nullable|string|max:20',
-            'distributor_location'  => 'nullable|string|max:500',
-            'status'                => 'required|in:Active,Inactive',
-            'c_urls'                => 'nullable|array',
-        ]);
-
-        // Collect parameters into JSON
-        $d_parameters = [];
-        for ($i = 1; $i <= 10; $i++) {
-            if ($request->has("d_parameter_$i")) {
-                $d_parameters[$i] = $request->input("d_parameter_$i");
-            }
+        try {
+            $this->distributorService->updateDistributor($distributor, $request->validated());
+            return redirect()->route('distributors.index')->with('success', 'Distributor updated successfully.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
-        $validated['d_parameters'] = $d_parameters;
-
-        $distributor->update($validated);
-
-        logActivity("Update Distributor (ID - {$distributor->id}, Name - {$distributor->name})", 'UPDATE', 'Distributor', $distributor->id);
-
-        return redirect()->route('distributors.index')
-            ->with('success', 'Distributor updated successfully.');
     }
 
     /**
-     * Remove the specified distributor.
+     * Remove the specified distributor from storage.
      */
-    public function destroy(Distributor $distributor)
+    public function destroy($id)
     {
         Gate::authorize('distributor.delete');
 
-        logActivity("Delete Distributor (ID - {$distributor->id}, Name - {$distributor->name})", 'DELETE', 'Distributor', $distributor->id);
-        
-        $distributor->delete();
+        $distributor = Distributor::findOrFail($id);
 
-        return redirect()->route('distributors.index')
-            ->with('success', 'Distributor deleted successfully.');
+        try {
+            $this->distributorService->deleteDistributor($distributor);
+            return redirect()->route('distributors.index')->with('success', 'Distributor deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 
+    // AJAX helper for company details
     public function getCompanyDetails($pid)
     {
         $company = Company::where('pid', $pid)->first();
-
-        if (!$company) {
-            return response()->json(['error' => 'Company not found'], 404);
-        }
-
-        // Map parameter labels to 1-10 numbering for the distributor columns
-        $parameters = [];
-        if (is_array($company->d_parameter)) {
-            foreach ($company->d_parameter as $index => $label) {
-                if ($index < 10) {
-                    $parameters[$index + 1] = $label;
-                }
-            }
-        }
+        if (!$company)
+            return response()->json(['error' => 'Not found'], 404);
 
         return response()->json([
             'distributor_types' => $company->d_types ?? [],
-            'parameters' => (object)$parameters,
-            'c_urls' => $company->c_urls ?? []
+            'parameters' => $company->d_parameter ?? []
         ]);
+    }
+
+    // AJAX helpers for Geo
+    public function getRegions($countryId)
+    {
+        return response()->json(Geo::where('nature', 'Region')->where('rid', $countryId)->orderBy('name')->get(['id', 'name']));
+    }
+
+    public function getStates($regionId)
+    {
+        return response()->json(Geo::where('nature', 'State')->where('rid', $regionId)->orderBy('name')->get(['id', 'name']));
+    }
+
+    public function getCities($stateId)
+    {
+        return response()->json(Geo::where('nature', 'City')->where('rid', $stateId)->orderBy('name')->get(['id', 'name']));
     }
 }

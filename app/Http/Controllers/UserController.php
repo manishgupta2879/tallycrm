@@ -5,11 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\User;
 use App\Models\Role;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use App\Services\UserService; // Added
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * Display a listing of users.
      */
@@ -51,37 +61,18 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        Gate::authorize('users.create');
+        try {
+            $data = $request->validated();
+            $data['status'] = $request->filled('status');
+            
+            $this->userService->createUser($data);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required',
-            'role_id' => 'required|exists:roles,id',
-            'companies' => 'required|array',
-            'companies.*' => 'exists:companies,id',
-            'status' => 'boolean',
-        ]);
-
-        // Create user
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'role_id' => $validated['role_id'],
-            'status' => $request->filled('status') ? true : false,
-        ]);
-
-        // Attach companies
-        if (isset($validated['companies'])) {
-            $user->companies()->attach($validated['companies']);
+            return redirect()->route('users.index')->with('success', 'User created successfully.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
-
-        logActivity("Create User (ID - {$user->id}, Name - {$user->name}, Email - {$user->email})", 'CREATE', 'User', $user->id);
-
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     /**
@@ -103,42 +94,18 @@ class UserController extends Controller
     /**
      * Update the specified user in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        Gate::authorize('users.edit');
+        try {
+            $data = $request->validated();
+            $data['status'] = $request->filled('status');
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable',
-            'role_id' => 'required|exists:roles,id',
-            'companies' => 'required|array',
-            'companies.*' => 'exists:companies,id',
-            'status' => 'boolean',
-        ]);
+            $this->userService->updateUser($user, $data);
 
-        // Only update password if provided
-        $updateData = [
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'role_id' => $validated['role_id'],
-            'status' => $request->filled('status') ? true : false,
-        ];
-
-        if ($request->filled('password')) {
-            $updateData['password'] = bcrypt($validated['password']);
+            return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
-
-        $user->update($updateData);
-
-        // Sync companies
-        if (isset($validated['companies'])) {
-            $user->companies()->sync($validated['companies']);
-        }
-
-        logActivity("Update User (ID - {$user->id}, Name - {$user->name}, Email - {$user->email})", 'UPDATE', 'User', $user->id);
-
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
     /**
@@ -152,10 +119,11 @@ class UserController extends Controller
             return redirect()->route('users.index')->with('error', 'Cannot delete your own account.');
         }
 
-        logActivity("Delete User (ID - {$user->id}, Name - {$user->name}, Email - {$user->email})", 'DELETE', 'User', $user->id);
-
-        $user->delete();
-
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        try {
+            $this->userService->deleteUser($user);
+            return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }

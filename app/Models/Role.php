@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+use App\Traits\Searchable;
+
 class Role extends Model
 {
+    use Searchable, HasFactory;
+
+    protected $searchable = ['name', 'slug'];
     /**
      * The attributes that are mass assignable.
      *
@@ -23,7 +29,7 @@ class Role extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'role_user')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     /**
@@ -32,8 +38,8 @@ class Role extends Model
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'role_permissions')
-                    ->withPivot(['view', 'create', 'edit', 'delete', 'export', 'import'])
-                    ->withTimestamps();
+            ->withPivot(['view', 'create', 'edit', 'delete', 'export', 'import'])
+            ->withTimestamps();
     }
 
     /**
@@ -42,9 +48,9 @@ class Role extends Model
     public function hasPermission(string $permissionModule, string $action = 'view'): bool
     {
         return $this->permissions()
-                    ->where('module', $permissionModule)
-                    ->wherePivot($action, true)
-                    ->exists();
+            ->where('module', $permissionModule)
+            ->wherePivot($action, true)
+            ->exists();
     }
 
     /**
@@ -53,7 +59,7 @@ class Role extends Model
     public function getModulePermissions(string $module)
     {
         return $this->permissions()
-                    ->where('module', $module)
-                    ->get();
+            ->where('module', $module)
+            ->get();
     }
 }

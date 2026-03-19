@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,12 +22,23 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Polymorphic mapping for contacts
+        Relation::morphMap([
+            'distributor' => \App\Models\Distributor::class,
+        ]);
+
         // Grant all permissions to Super Admin
         Gate::before(function ($user, $ability) {
             return $user->isSuperAdmin() ? true : null;
         });
 
-        // Register permission gates dynamically
+        $this->app->singleton('encrypter', function ($app) {
+            $key = env('ENC_KEY');
+            if (str_starts_with($key, 'base64:')) {
+                $key = base64_decode(substr($key, 7));
+            }
+            return new Encrypter($key, 'AES-256-CBC');
+        });
         $this->registerPermissionGates();
     }
 
@@ -73,7 +87,7 @@ class AppServiceProvider extends ServiceProvider
                         });
                     }
                 }
-                
+
                 // Keep the base module gate as an alias for .view
                 if (!Gate::has($module)) {
                     Gate::define($module, function ($user) use ($module) {

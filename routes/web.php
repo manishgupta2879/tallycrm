@@ -29,9 +29,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('roles', RoleController::class);
     // Company Management Routes
     Route::resource('companies', CompanyController::class);
-    // Distributor Management Routes
-    Route::resource('distributors', DistributorController::class);
+    Route::get('companies/{company}/decrypt-urls', [CompanyController::class, 'decryptUrls'])->name('companies.decrypt-urls');
+    // Distributor Management Routes — explicit routes MUST be registered before resource() to avoid {distributor} wildcard conflicts
     Route::get('/distributors/get-company-details/{pid}', [DistributorController::class, 'getCompanyDetails'])->name('distributors.getCompanyDetails');
+    Route::get('/distributors/geo/regions/{countryPid}', [DistributorController::class, 'getRegions'])->name('distributors.geo.regions');
+    Route::get('/distributors/geo/states/{regionPid}', [DistributorController::class, 'getStates'])->name('distributors.geo.states');
+    Route::get('/distributors/geo/cities/{statePid}', [DistributorController::class, 'getCities'])->name('distributors.geo.cities');
+    Route::resource('distributors', DistributorController::class);
+
 
     // User Log Routes
     Route::get('/user-logs', [\App\Http\Controllers\UserLogController::class, 'index'])->name('user-logs.index');

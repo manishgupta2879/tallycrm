@@ -22,6 +22,10 @@ return new class extends Migration
             $table->string('mobile')->nullable();
             // Territory / Area of Operations
             $table->string('territory')->nullable();
+            $table->json('d_types')->nullable();
+            $table->json('d_parameter')->nullable();
+            $table->json('c_urls')->nullable();
+            $table->integer('no_of_urls')->default(0);
             $table->string('status')->default('Active');
             $table->timestamps();
         });

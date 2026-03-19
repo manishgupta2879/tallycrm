@@ -3,10 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable; // Added
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserLog extends Model
 {
+    use Prunable; // Added
+
+    /**
+     * Get the prunable model query.
+     */
+    public function prunable()
+    {
+        return static::where('date', '<', now()->subYear());
+    }
+
     /**
      * The table associated with the model.
      *

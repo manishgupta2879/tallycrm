@@ -23,27 +23,27 @@
         @endif
 
         {{-- Error/Validation Messages --}}
-        @if (session('error') || $errors->any())
-            <div class="flash-error border flex items-start justify-between" role="alert">
-                <div class="flex items-start gap-2">
-                    <i data-lucide="alert-circle" class="h-5 w-5 mt-0.5"></i>
-                    <div>
-                        <span
-                            class="text-sm font-semibold">{{ session('error') ?? 'There were some issues with your submission:' }}</span>
-                        @if ($errors->any())
-                            <ul class="text-xs list-disc list-inside mt-1 space-y-0.5">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
+        <!-- @if (session('error') || $errors->any())
+                <div class="flash-error border flex items-start justify-between" role="alert">
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="alert-circle" class="h-5 w-5 mt-0.5"></i>
+                        <div>
+                            <span
+                                class="text-sm font-semibold">{{ session('error') ?? 'There were some issues with your submission:' }}</span>
+                            @if ($errors->any())
+                                <ul class="text-xs list-disc list-inside mt-1 space-y-0.5">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
                     </div>
+                    <button type="button" @click="show = false" class="opacity-60 hover:opacity-100 transition-opacity">
+                        <i data-lucide="x" class="h-4 w-4"></i>
+                    </button>
                 </div>
-                <button type="button" @click="show = false" class="opacity-60 hover:opacity-100 transition-opacity">
-                    <i data-lucide="x" class="h-4 w-4"></i>
-                </button>
-            </div>
-        @endif
+            @endif -->
 
         {{-- Warning Message --}}
         @if (session('warning'))

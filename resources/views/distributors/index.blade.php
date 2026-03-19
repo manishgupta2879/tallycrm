@@ -39,11 +39,12 @@
                             <th>Dist. Code</th>
                             <th>Name</th>
                             <th>Type</th>
-                            <th>Company Code</th>
-                            <th>City</th>
+                            <th>Principal Company</th>
+                            <th>Region</th>
                             <th>State</th>
-                            <th>Contact Name</th>
-                            <th>Mobile</th>
+                            <th>City</th>
+                            <th>Created At</th>
+                            <th>Updated At</th>
                             <th>Status</th>
                             <th>ACTION</th>
                         </tr>
@@ -52,14 +53,15 @@
                         @forelse ($distributors as $sn => $distributor)
                             <tr class="hover:bg-[#e6e6e6] transition">
                                 <td>{{ $distributors->firstItem() + $sn }}</td>
-                                <td>{{ $distributor->pid }}</td>
+                                <td>{{ $distributor->code }}</td>
                                 <td>{{ $distributor->name }}</td>
-                                <td>{{ $distributor->distributor_type }}</td>
-                                <td>{{ $distributor->company_pid }}</td>
-                                <td>{{ $distributor->city }}</td>
-                                <td>{{ $distributor->state }}</td>
-                                <td>{{ $distributor->contact_name }}</td>
-                                <td>{{ $distributor->mobile }}</td>
+                                <td>{{ $distributor->type }}</td>
+                                <td>{{ $distributor->company->name ?? $distributor->company_code }}</td>
+                                <td>{{ $distributor->geoRegion->name ?? $distributor->region }}</td>
+                                <td>{{ $distributor->geoState->name ?? $distributor->state }}</td>
+                                <td>{{ $distributor->geoCity->name ?? $distributor->city }}</td>
+                                <td>{{ $distributor->created_at->format('d/m/Y') }}</td>
+                                <td>{{ $distributor->updated_at->format('d/m/Y') }}</td>
                                 <td>{{ $distributor->status }}</td>
                                 <td>
                                     <div class="flex justify-center space-x-1">
@@ -80,7 +82,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="px-3 py-6 text-center text-gray-500 text-xs">No distributors found</td>
+                                <td colspan="12" class="px-3 py-6 text-center text-gray-500 text-xs">No distributors found</td>
                             </tr>
                         @endforelse
                     </tbody>
