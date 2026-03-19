@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AdditionalOpportunityController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
@@ -27,6 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     // Role Management Routes
     Route::resource('roles', RoleController::class);
+    // Category Management Routes
+    Route::resource('categories', CategoryController::class);
+    Route::resource('additional-opportunities', AdditionalOpportunityController::class);
     // Company Management Routes
     Route::resource('companies', CompanyController::class);
     Route::get('companies/{company}/decrypt-urls', [CompanyController::class, 'decryptUrls'])->name('companies.decrypt-urls');

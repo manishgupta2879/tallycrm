@@ -54,6 +54,24 @@ return [
                         ]
                     ],
                 ],
+                [
+                    'label' => 'Additional Opportunity',
+                    'icon' => null,
+                    'items' => [
+                        [
+                            'label' => 'Category',
+                            'route' => 'categories.index',
+                            'icon' => 'building',
+                            'permission' => 'categories',
+                        ],
+                        [
+                            'label' => 'Additional Opportunity',
+                            'route' => 'additional-opportunities',
+                            'icon' => 'building',
+                            'permission' => 'additional-opportunities',
+                        ],
+                    ],
+                ],
                 // Removed Secondary Setup from here
                 // New top-level entry for Secondary Setup added below
                 // End of setup items

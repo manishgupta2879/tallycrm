@@ -66,7 +66,7 @@
             $linkHref = $preventNav ? 'javascript:void(0)' : $href;
         @endphp
 
-        <div class="relative group">
+        <div class="relative group/menu">
             <a href="{{ $linkHref }}" onclick="@if ($preventNav) event.preventDefault(); @endif"
                 class="flex items-center justify-between px-3 py-1.5 hover:bg-gray-100 w-full text-left cursor-pointer
                 {{ $itemIndex === 0 ? 'rounded-t' : '' }}
@@ -82,7 +82,7 @@
             </a>
 
             @if ($hasChildren)
-                <div class="absolute left-full top-0 bg-white text-gray-800 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-xs"
+                <div class="absolute left-full top-0 bg-white text-gray-800 rounded shadow-lg opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all z-50 text-xs transition-opacity duration-200"
                     style="min-width: 180px;">
                     <x-menu-simple :items="$item['items']" :user="$user" />
                 </div>

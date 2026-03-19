@@ -31,7 +31,7 @@
                     @php
                         $menus = config('menu.menus', []);
                         $user = Auth::user();
-
+// dd($menus);
                         // Recursive function to check if any child is visible
                         $checkAnyVisible = function($items) use (&$checkAnyVisible) {
                             foreach ($items as $item) {
