@@ -10,14 +10,14 @@
 
 return [
     /*
-    |--------------------------------------------------------------------------
-    | Main Navigation Menus
-    |--------------------------------------------------------------------------
-    |
-    | Define primary navigation menus that appear in the application header.
-    | Each menu can contain multiple items with labels, routes, and icons.
-    |
-    */
+     |--------------------------------------------------------------------------
+     | Main Navigation Menus
+     |--------------------------------------------------------------------------
+     |
+     | Define primary navigation menus that appear in the application header.
+     | Each menu can contain multiple items with labels, routes, and icons.
+     |
+     */
 
     'menus' => [
         'setup' => [
@@ -66,7 +66,7 @@ return [
                         ],
                         [
                             'label' => 'Additional Opportunity',
-                            'route' => 'additional-opportunities',
+                            'route' => 'additional-opportunities.index',
                             'icon' => 'building',
                             'permission' => 'additional-opportunities',
                         ],
@@ -107,13 +107,13 @@ return [
     ],
 
     /*
-    |--------------------------------------------------------------------------
-    | User Menu (Right Side)
-    |--------------------------------------------------------------------------
-    |
-    | Menu items that appear on the right side of the header (user profile menu)
-    |
-    */
+     |--------------------------------------------------------------------------
+     | User Menu (Right Side)
+     |--------------------------------------------------------------------------
+     |
+     | Menu items that appear on the right side of the header (user profile menu)
+     |
+     */
 
     'user_menu' => [
         [

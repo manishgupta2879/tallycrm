@@ -64,6 +64,26 @@ class PermissionsSeeder extends Seeder
                 'export' => false,
                 'import' => false,
             ],
+            // Categories module - full CRUD
+            [
+                'module' => 'categories',
+                'view' => true,
+                'create' => true,
+                'edit' => true,
+                'delete' => true,
+                'export' => true,
+                'import' => true,
+            ],
+            // Additional Opportunities module - full CRUD
+            [
+                'module' => 'additional-opportunities',
+                'view' => true,
+                'create' => true,
+                'edit' => true,
+                'delete' => true,
+                'export' => true,
+                'import' => true,
+            ],
         ];
 
         // Create permissions
@@ -75,11 +95,13 @@ class PermissionsSeeder extends Seeder
         }
 
         $this->command->info('✅ Permissions created successfully!');
-        $this->command->info('   • 5 permissions total');
+        $this->command->info('   • 7 permissions total');
         $this->command->info('   • Company: View, Create, Edit, Delete, Export, Import');
         $this->command->info('   • Distributor: View, Create, Edit, Delete, Export, Import');
         $this->command->info('   • Users: View, Create, Edit, Delete, Export, Import');
         $this->command->info('   • Roles: View, Create, Edit, Delete, Export, Import');
         $this->command->info('   • Activity Log: View only');
+        $this->command->info('   • Categories: View, Create, Edit, Delete, Export, Import');
+        $this->command->info('   • Additional Opportunities: View, Create, Edit, Delete, Export, Import');
     }
 }

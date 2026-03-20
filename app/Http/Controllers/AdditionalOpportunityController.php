@@ -27,7 +27,7 @@ class AdditionalOpportunityController extends Controller
         }
         $query->with('category'); // Eager load category relationship
         $AdditionalOpportunites = $query->paginate(20);
-        return view('AdditionalOpportunity.index', compact('AdditionalOpportunites'));
+        return view('additional-opportunity.index', compact('AdditionalOpportunites'));
     }
 
     /**
@@ -37,7 +37,7 @@ class AdditionalOpportunityController extends Controller
     {
         Gate::authorize('additional-opportunities.create');
         $categories = Category::all();
-        return view('AdditionalOpportunity.create', compact('categories'));
+        return view('additional-opportunity.create', compact('categories'));
     }
 
     /**
@@ -69,7 +69,7 @@ class AdditionalOpportunityController extends Controller
      */
     public function show(AdditionalOpportunity $additionalOpportunity)
     {
-        //
+    //
     }
 
     /**
@@ -80,7 +80,7 @@ class AdditionalOpportunityController extends Controller
         Gate::authorize('additional-opportunities.edit');
         $categories = Category::all();
         // dd($additionalOpportunity, $categories);
-        return view('AdditionalOpportunity.edit', compact('additionalOpportunity', 'categories'));
+        return view('additional-opportunity.edit', compact('additionalOpportunity', 'categories'));
     }
 
     /**

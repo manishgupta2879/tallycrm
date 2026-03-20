@@ -47,7 +47,7 @@ class DistributorController extends Controller
     public function create()
     {
         Gate::authorize('distributor.create');
-        $companies = Company::where('status', 'Active')->get();
+        $companies = Company::where('status', '=', 'Active')->get();
         $countries = Geo::where('nature', 'Country')->get();
         $deploymentOptions = ['local' => 'Local', 'cloud' => 'Cloud'];
         $statusOptions = ['Active' => 'Active', 'Inactive' => 'Inactive'];
@@ -62,7 +62,8 @@ class DistributorController extends Controller
         try {
             $this->distributorService->createDistributor($request->validated());
             return redirect()->route('distributors.index')->with('success', 'Distributor created successfully.');
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
@@ -89,7 +90,8 @@ class DistributorController extends Controller
         try {
             $this->distributorService->updateDistributor($distributor, $request->validated());
             return redirect()->route('distributors.index')->with('success', 'Distributor updated successfully.');
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
@@ -106,7 +108,8 @@ class DistributorController extends Controller
         try {
             $this->distributorService->deleteDistributor($distributor);
             return redirect()->route('distributors.index')->with('success', 'Distributor deleted successfully.');
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
