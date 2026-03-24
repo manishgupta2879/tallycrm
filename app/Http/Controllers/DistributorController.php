@@ -76,8 +76,12 @@ class DistributorController extends Controller
         Gate::authorize('distributor.edit');
 
         $distributor = Distributor::with('contacts')->findOrFail($id);
+        $companies = Company::where('status', '=', 'Active')->get();
+        $countries = Geo::where('nature', 'Country')->get();
+        $deploymentOptions = ['local' => 'Local', 'cloud' => 'Cloud'];
+        $statusOptions = ['Active' => 'Active', 'Inactive' => 'Inactive'];
 
-        return view('distributors.edit', compact('distributor'));
+        return view('distributors.edit', compact('distributor', 'companies', 'countries', 'deploymentOptions', 'statusOptions'));
     }
 
     /**

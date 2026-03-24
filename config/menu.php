@@ -102,6 +102,12 @@ return [
                     'icon' => 'history',
                     'permission' => 'activity-log',
                 ],
+                [
+                    'label' => 'Tally Log',
+                    'route' => 'tally-logs.index',
+                    'icon' => 'history',
+                    'permission' => 'tally-log',
+                ],
             ],
         ],
     ],

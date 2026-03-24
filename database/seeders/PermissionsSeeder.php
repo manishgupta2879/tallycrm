@@ -84,6 +84,16 @@ class PermissionsSeeder extends Seeder
                 'export' => true,
                 'import' => true,
             ],
+            // TallyLog module - full CRUD
+            [
+                'module' => 'tally-log',
+                'view' => true,
+                'create' => true,
+                'edit' => true,
+                'delete' => true,
+                'export' => true,
+                'import' => true,
+            ],
         ];
 
         // Create permissions
@@ -95,7 +105,7 @@ class PermissionsSeeder extends Seeder
         }
 
         $this->command->info('✅ Permissions created successfully!');
-        $this->command->info('   • 7 permissions total');
+        $this->command->info('   • 8 permissions total');
         $this->command->info('   • Company: View, Create, Edit, Delete, Export, Import');
         $this->command->info('   • Distributor: View, Create, Edit, Delete, Export, Import');
         $this->command->info('   • Users: View, Create, Edit, Delete, Export, Import');
@@ -103,5 +113,6 @@ class PermissionsSeeder extends Seeder
         $this->command->info('   • Activity Log: View only');
         $this->command->info('   • Categories: View, Create, Edit, Delete, Export, Import');
         $this->command->info('   • Additional Opportunities: View, Create, Edit, Delete, Export, Import');
+        $this->command->info('   • Tally Log: View, Create, Edit, Delete, Export, Import');
     }
 }

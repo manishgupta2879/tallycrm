@@ -38,8 +38,8 @@ class UpdateDistributorRequest extends FormRequest
             'state' => 'required|string|max:20',
             'city' => 'required|string|max:20',
             'pincode' => 'required|string|max:10',
-            'gst_number' => ['required', 'string', new GstNumber],
-            'pan_number' => ['required', 'string', new PanNumber],
+            'gst_number' => ['required', 'string'],
+            'pan_number' => ['required', 'string'   ],
             'status' => 'required|string|in:Active,Inactive',
 
             // Tally details

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class GeoSeeder extends Seeder
 {
@@ -12,7 +13,7 @@ class GeoSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::execute("INSERT INTO `geo` (`geo_id`, `pid`, `rid`, `id`, `name`, `nature`) VALUES
+        DB::statement("INSERT INTO `geo` (`geo_id`, `pid`, `rid`, `id`, `name`, `nature`) VALUES
 (1, 'SONY001', '0', 'Cou57a2d1883460e', 'India', 'Country'),
 (2, 'SONY001', 'Cou57a2d1883460e', 'Reg57a2d19b2fbdb', 'East', 'Region'),
 (3, 'SONY001', 'Cou57a2d1883460e', 'Reg57a2d1b74a5a2', 'North', 'Region'),
@@ -216,11 +217,11 @@ class GeoSeeder extends Seeder
 (203, 'SONY001', 'Sta57a2d2edb5468', 'Cit57f5fc487e83b', 'Dhaula Kuan', 'City'),
 (204, 'SONY001', 'Sta57a2d2edb5468', 'Cit57f5fc5bbb91f', 'Satya Niketan', 'City'),
 (205, 'SONY001', 'Sta57a2d491a4e92', 'Cit62ff6846be6ea', 'Rajkot', 'City'),
-(206, 'SONY001', 'Sta57a2d30a39001', 'Cit63256f4ed8b69', 'Gurugram', 'City', NULL, '2024-01-13 02:09:04'),
+(206, 'SONY001', 'Sta57a2d30a39001', 'Cit63256f4ed8b69', 'Gurugram', 'City'),
 (207, 'SONY001', 'Reg57a2d1b74a5a2', 'Sta632570bfe46ba', 'Chandigarh', 'State'),
 (208, 'SONY001', 'Sta632570bfe46ba', 'Cit6325711c80f18', 'Chandigarh', 'City'),
 (209, 'SONY001', 'Sta57a2d2a5bf4a8', 'Cit632571db021ae', 'Ludhiana', 'City'),
-(210, 'SONY001', 'Sta57a2d55610bbe', 'Cit63257421f22d4', 'Bhubaneswar', 'City', NULL, '2024-01-13 02:03:58'),
+(210, 'SONY001', 'Sta57a2d55610bbe', 'Cit63257421f22d4', 'Bhubaneswar', 'City'),
 (213, 'SONY001', 'Sta57a2d3d52f37d', 'Cit63258bf2bf7e1', 'Coimbatore', 'City'),
 (214, 'SONY001', 'Sta57a2d3c9d3c4f', 'Cit63258d4d55536', 'Mangalore', 'City'),
 (215, 'SONY001', 'Sta57a2d491a4e92', 'Cit632aa27d5d023', 'Surat', 'City'),

@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/distributors/geo/states/{regionPid}', [DistributorController::class, 'getStates'])->name('distributors.geo.states');
     Route::get('/distributors/geo/cities/{statePid}', [DistributorController::class, 'getCities'])->name('distributors.geo.cities');
     Route::resource('distributors', DistributorController::class);
+    Route::resource('tally-logs', \App\Http\Controllers\TallyLogController::class);
 
 
     // User Log Routes

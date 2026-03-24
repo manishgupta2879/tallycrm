@@ -51,7 +51,7 @@
                                     class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic"
                                     onchange="fetchCompanyDetails(this.value)">
                                     <option value="">-- Select Company --</option>
-                                    @foreach ($companies() as $comp)
+                                    @foreach ($companies as $comp)
                                         <option value="{{ $comp->pid }}" {{ old('company_code', $distributor->company_code) === $comp->pid ? 'selected' : '' }}>
                                             {{ $comp->pid }} - {{ $comp->name }}
                                         </option>
@@ -123,7 +123,7 @@
                                     <select name="country" id="country" required
                                         class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
                                         <option value="">-- Select Country --</option>
-                                        @foreach ($countries() as $c)
+                                        @foreach ($countries as $c)
                                             <option value="{{ $c->id }}" {{ old('country', $distributor->country) == $c->id ? 'selected' : '' }}>
                                                 {{ $c->name }}
                                             </option>
@@ -384,7 +384,7 @@
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Expiry</label>
                                     <div class="relative">
                                         <input type="text"
-                                            value="{{ old('tally_expiry', $distributor->tally_expiry ? \Carbon\Carbon::parse($distributor->tally_expiry)->format('d/m/Y') : '') }}"
+                                            value="{{ old('tally_expiry', $distributor->tally_expiry) }}"
                                             class="w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
                                             disabled>
                                         <div
@@ -393,7 +393,7 @@
                                         </div>
                                     </div>
                                     <input type="hidden" name="tally_expiry"
-                                         value="{{ old('tally_expiry', $distributor->tally_expiry ? \Carbon\Carbon::parse($distributor->tally_expiry)->format('d/m/Y') : '') }}">
+                                         value="{{ old('tally_expiry', $distributor->tally_expiry) }}">
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Edition</label>
@@ -445,7 +445,7 @@
                                              <select name="tally_deployed" id="tally_deployed"
                                                  class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic"
                                                  onchange="handleTallyDeployedChange(this)">
-                                                 @foreach($deploymentOptions() as $value => $label)
+                                                 @foreach($deploymentOptions as $value => $label)
                                                      <option value="{{ $value }}" {{ old('tally_deployed', $distributor->tally_deployed) === $value ? 'selected' : '' }}>{{ $label }}</option>
                                                  @endforeach
                                              </select>
@@ -499,7 +499,7 @@
                                         Receive</label>
                                     <div class="relative">
                                         <input type="text" name="rollout_request_date"
-                                             value="{{ old('rollout_request_date', $distributor->rollout_request_date ? \Carbon\Carbon::parse($distributor->rollout_request_date)->format('d/m/Y') : '') }}"
+                                             value="{{ old('rollout_request_date',  $distributor->rollout_request_date) }}"
                                             class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
                                         <div
                                             class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
@@ -511,7 +511,7 @@
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">Date of TCP Generated</label>
                                     <div class="relative">
                                         <input type="text" name="tcp_generated_date"
-                                             value="{{ old('tcp_generated_date', $distributor->tcp_generated_date ? \Carbon\Carbon::parse($distributor->tcp_generated_date)->format('d/m/Y') : '') }}"
+                                             value="{{ old('tcp_generated_date', $distributor->tcp_generated_date) }}"
                                             class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
                                         <div
                                             class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
@@ -523,7 +523,7 @@
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">Date of Rollout Done</label>
                                     <div class="relative">
                                         <input type="text" name="rollout_done_date"
-                                             value="{{ old('rollout_done_date', $distributor->rollout_done_date ? \Carbon\Carbon::parse($distributor->rollout_done_date)->format('d/m/Y') : '') }}"
+                                             value="{{ old('rollout_done_date', $distributor->rollout_done_date) }}"
                                             class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
                                         <div
                                             class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
@@ -547,7 +547,7 @@
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">Remarks Date</label>
                                     <div class="relative">
                                         <input type="text" name="remarks_date"
-                                             value="{{ old('remarks_date', $distributor->remarks_date ? \Carbon\Carbon::parse($distributor->remarks_date)->format('d/m/Y') : '') }}"
+                                             value="{{ old('remarks_date', $distributor->remarks_date) }}"
                                             class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
                                         <div
                                             class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
@@ -562,7 +562,7 @@
                                     </label>
                                      <select name="status" id="status" required
                                          class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
-                                         @foreach($statusOptions() as $option)
+                                         @foreach($statusOptions as $option)
                                              <option value="{{ $option }}" {{ old('status', $distributor->status) === $option ? 'selected' : '' }}>{{ $option }}</option>
                                          @endforeach
                                      </select>
