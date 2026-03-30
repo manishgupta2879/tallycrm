@@ -20,12 +20,12 @@ class TallyLogController extends Controller
 
         if ($request->has('search')) {
             $search = $request->input('search');
-            $query->where(function($q) use ($search) {
-                $q->where('pid', 'like', "%{$search}%")
-                  ->orWhere('tally_serial_no', 'like', "%{$search}%")
-                  ->orWhere('account_id', 'like', "%{$search}%")
-                  ->orWhere('distributor_id', 'like', "%{$search}%");
-            });
+            $query->whereAny([
+                'tally_serial_no',
+                'tally_version',
+                'account_id',
+                'tally_edition'
+            ], 'like', "%{$search}%");
         }
 
         $tallyLogs = $query->orderBy('created_at', 'desc')->paginate(20);

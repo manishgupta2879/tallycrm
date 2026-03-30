@@ -1,7 +1,7 @@
-@extends('layouts.app', ['breadcrumb' => 'Company', 'breadcrumbRight' => 'Dashboard -> Primary Setup -> Company'])
+@extends('layouts.app', ['breadcrumb' => 'Company', 'breadcrumbRight' => 'Dashboard->Primary Setup->Company'])
 
 @section('content')
-    <div class="p-4 max-w-full">
+    <div class="max-w-full">
 
 
         <!-- Card Container -->
@@ -76,7 +76,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-3 py-6 text-center text-gray-500 text-xs">No companies found</td>
+                                <td colspan="9" class="px-3 text-center text-gray-500 text-xs">No companies found</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -84,8 +84,7 @@
             </div>
 
             <!-- Pagination -->
-            <x-pagination :currentPage="$companies->currentPage()" :totalPages="$companies->lastPage()"
-                :totalRecords="$companies->total()" :perPage="$companies->perPage()"
+            <x-pagination :currentPage="$companies->currentPage()" :totalPages="$companies->lastPage()" :totalRecords="$companies->total()" :perPage="$companies->perPage()"
                 baseUrl="{{ route('companies.index') }}" />
         </div>
     </div>

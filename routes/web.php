@@ -40,6 +40,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/distributors/geo/regions/{countryPid}', [DistributorController::class, 'getRegions'])->name('distributors.geo.regions');
     Route::get('/distributors/geo/states/{regionPid}', [DistributorController::class, 'getStates'])->name('distributors.geo.states');
     Route::get('/distributors/geo/cities/{statePid}', [DistributorController::class, 'getCities'])->name('distributors.geo.cities');
+    
+    // Related Info Routes
+    Route::get('/distributors/{distributor}/tally-details', [DistributorController::class, 'tallyDetails'])->name('distributors.tally-details');
+    Route::get('/distributors/{distributor}/tdl-addons', [DistributorController::class, 'tdlAddons'])->name('distributors.tdl-addons');
+    Route::get('/distributors/{distributor}/company-features', [DistributorController::class, 'companyFeatures'])->name('distributors.company-features');
+
     Route::resource('distributors', DistributorController::class);
     Route::resource('tally-logs', \App\Http\Controllers\TallyLogController::class);
 

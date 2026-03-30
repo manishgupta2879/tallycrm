@@ -1,0 +1,91 @@
+{
+	"masterdata_upload_request": [
+	{
+		"distributorinfo": [
+		{
+			"tallyserialno": "746470602",
+			"principalid": "SONY001",
+			"principalcompany": "Sony India Pvt Ltd",
+			"distributorid": "1010974",
+			"distpermpass": "",
+			"distname": "Hindustan Sales Corporation",
+			"distaddress": "6 Ganesh Chandra Avenue, Kolkata-700013, West Bengal",
+			"distcontactperson": "",
+			"distemailid": "",
+			"distmobileno": "9830324220",
+			"distpanno": "",
+			"distgstno": "",
+			"rolloutdate": "1-Apr-2024",
+			"lastsyncdate": "31-Dec-2025",
+			"diststatus": "Active",
+
+			"noofsyncurls": "1",
+			"basesyncurl": "https://demo1.garruda.co.in/webservice/api.php"
+		},
+		{
+			"tallyserialno": "746470602",
+			"principalid": "LGEIL",
+			"principalcompany": "LG Electronics India Pvt Ltd",
+			"distributorid": "IN017785007B-LUC3995",
+			"distpermpass": "",
+			"distname": "BAWA AGENCIES",
+			"distaddress": "159, REKABGANJ, FAIZABAD, UTTAR PRADESH",
+			"distcontactperson": "",
+			"distemailid": "",
+			"distmobileno": "",
+			"distpanno": "",
+			"distgstno": "",
+			"rolloutdate": "29-Nov-2023",
+			"lastsyncdate": "02-Jan-2026",
+			"diststatus": "Active",
+			
+			"noofsyncurls": "2",
+			"basesyncurl": "https://www.lgindiasoms.com:1300/api/"
+		}
+		],
+		"tallyproductinfo": {
+			"tallyserialno": "746470602",
+			"tallyversion": "TallyPrime Series A",
+			"tallyrelease": "5.1",
+			"tallyedition": "Silver",
+			"accountid": "vidya21bhushan@gmail.com",
+			"tssexpirydate": "28-Feb-2025"
+		},
+		"tdladdonsinfo": [
+		{
+            "tallyserialno": "746470602",
+			"tcpfilename": "Garruda-SSV Ver-2025.12.17",
+			"tcpfileformat": "TCP",
+			"tcpversion": "Ver-2025.12.17",
+			"tcpexpirydate": "23-Jan-2026",
+			"tcpsourcetype": "Local",
+			"tcpauthorname": "Tally Developer",
+			"tcpauthoremailid": "",
+			"tcpauthorwebsite": ""
+		},
+		{
+            "tallyserialno": "746470602",
+			"tcpfilename": "Sony - Garruda SSV Ver-2025.12.17",
+			"tcpfileformat": "TCP",
+			"tcpversion": "Ver-2025.12.17",
+			"tcpexpirydate": "23-Jan-2026",
+			"tcpsourcetype": "Local",
+			"tcpauthorname": "Tally Developer",
+			"tcpauthoremailid": "",
+			"tcpauthorwebsite": ""
+		},
+		{
+            "tallyserialno": "746470602",
+			"tcpfilename": "LGEILDMSIntegration Ver-2026.01.02",
+			"tcpfileformat": "TCP",
+			"tcpversion": "Ver-2026.01.02",
+			"tcpexpirydate": "01-Feb-2026",
+			"tcpsourcetype": "Local",
+			"tcpauthorname": "Tally Developer",
+			"tcpauthoremailid": "",
+			"tcpauthorwebsite": ""
+		}
+		]
+	}
+	]
+}

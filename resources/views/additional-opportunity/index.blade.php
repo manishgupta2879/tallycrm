@@ -1,4 +1,4 @@
-@extends('layouts.app', ['breadcrumb' => 'Additional Opportunities', 'breadcrumbRight' => 'Dashboard -> Additional Opportunity -> Additional Oopportunities'])
+@extends('layouts.app', ['breadcrumb' => 'Additional Opportunities', 'breadcrumbRight' => 'Dashboard->Additional Opportunity->Additional Oopportunities'])
 {{-- @dd('testing'); --}}
 @section('content')
     <div class="p-4 max-w-full">
@@ -17,7 +17,8 @@
                 </div>
                 {{-- ... (search form) ... --}}
                 <div class="flex items-center space-x-1">
-                    <form method="GET" action="{{ route('additional-opportunities.index') }}" class="flex items-center space-x-1">
+                    <form method="GET" action="{{ route('additional-opportunities.index') }}"
+                        class="flex items-center space-x-1">
                         <div class="flex">
                             <input type="text" name="search" placeholder="Search..." value="{{ request('search', '') }}"
                                 class="px-2 py-1.5 border border-gray-300 rounded-l-md text-xs focus:outline-none focus:ring-1 focus:ring-gray-600">
@@ -54,7 +55,8 @@
                                 <td>
                                     <div class="flex justify-center space-x-1">
                                         @can('additional-opportunities.edit')
-                                            <a href="{{ route('additional-opportunities.edit', $additionalOpportunity->id) }}" class="" title="Edit">
+                                            <a href="{{ route('additional-opportunities.edit', $additionalOpportunity->id) }}"
+                                                class="" title="Edit">
                                                 <x-icons.edit-circle class="text-primary-0 h-5 w-5" />
                                             </a>
                                         @endcan
@@ -66,7 +68,8 @@
                                                     <x-icons.trash-circle class="text-red-600 hover:text-red-800 h-5 w-5" />
                                                 </button>
                                             @else
-                                                <span class="cursor-not-allowed opacity-50" title="Cannot delete - users assigned">
+                                                <span class="cursor-not-allowed opacity-50"
+                                                    title="Cannot delete - users assigned">
                                                     <x-icons.trash-circle class="text-gray-400 h-5 w-5" />
                                                 </span>
                                             @endif
@@ -76,7 +79,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-3 py-6 text-center text-gray-500 text-xs">
+                                <td colspan="5" class="px-3 text-center text-gray-500 text-xs">
                                     No roles found
                                 </td>
                             </tr>
@@ -86,8 +89,8 @@
             </div>
 
             <!-- Pagination -->
-            <x-pagination :currentPage="$AdditionalOpportunites->currentPage()" :totalPages="$AdditionalOpportunites->lastPage()"
-                :totalRecords="$AdditionalOpportunites->total()" :perPage="$AdditionalOpportunites->perPage()" baseUrl="{{ route('additional-opportunities.index') }}" />
+            <x-pagination :currentPage="$AdditionalOpportunites->currentPage()" :totalPages="$AdditionalOpportunites->lastPage()" :totalRecords="$AdditionalOpportunites->total()" :perPage="$AdditionalOpportunites->perPage()"
+                baseUrl="{{ route('additional-opportunities.index') }}" />
         </div>
     </div>
 

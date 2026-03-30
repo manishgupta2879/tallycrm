@@ -6,6 +6,9 @@ use App\Models\Distributor;
 use App\Models\Company;
 use App\Models\Geo;
 use App\Models\Contact;
+use App\Models\TallyLog;
+use App\Models\TdlAddon;
+use App\Models\CompanyFeature;
 use App\Http\Requests\StoreDistributorRequest;
 use App\Http\Requests\UpdateDistributorRequest;
 use App\Services\DistributorService; // Added
@@ -76,8 +79,8 @@ class DistributorController extends Controller
         Gate::authorize('distributor.edit');
 
         $distributor = Distributor::with('contacts')->findOrFail($id);
-        $companies = Company::where('status', '=', 'Active')->get();
-        $countries = Geo::where('nature', 'Country')->get();
+        $companies = Company::where('status', '=', 'Active', 'and')->get();
+        $countries = Geo::where('nature', '=', 'Country')->get();
         $deploymentOptions = ['local' => 'Local', 'cloud' => 'Cloud'];
         $statusOptions = ['Active' => 'Active', 'Inactive' => 'Inactive'];
 
@@ -121,7 +124,7 @@ class DistributorController extends Controller
     // AJAX helper for company details
     public function getCompanyDetails($pid)
     {
-        $company = Company::where('pid', $pid)->first();
+        $company = Company::where('pid', '=', $pid)->first();
         if (!$company)
             return response()->json(['error' => 'Not found'], 404);
 
@@ -134,16 +137,53 @@ class DistributorController extends Controller
     // AJAX helpers for Geo
     public function getRegions($countryId)
     {
-        return response()->json(Geo::where('nature', 'Region')->where('rid', $countryId)->orderBy('name')->get(['id', 'name']));
+        return response()->json(Geo::where('nature', '=', 'Region', 'and')->where('rid', '=', $countryId, 'and')->orderBy('name')->get(['id', 'name']));
     }
 
     public function getStates($regionId)
     {
-        return response()->json(Geo::where('nature', 'State')->where('rid', $regionId)->orderBy('name')->get(['id', 'name']));
+        return response()->json(Geo::where('nature', '=', 'State', 'and')->where('rid', '=', $regionId, 'and')->orderBy('name')->get(['id', 'name']));
     }
 
     public function getCities($stateId)
     {
-        return response()->json(Geo::where('nature', 'City')->where('rid', $stateId)->orderBy('name')->get(['id', 'name']));
+        return response()->json(Geo::where('nature', '=', 'City', 'and')->where('rid', '=', $stateId, 'and')->orderBy('name')->get(['id', 'name']));
+    }
+
+    public function tallyDetails(Distributor $distributor)
+    {
+        Gate::authorize('distributor.view');
+        
+        $logs = TallyLog::where('tally_serial_no', '=', $distributor->tally_serial, 'and')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+            
+        return view('distributors.tally_details', compact('distributor', 'logs'));
+    }
+
+    public function tdlAddons(Distributor $distributor)
+    {
+        Gate::authorize('distributor.view');
+        
+        $addons = TdlAddon::where('tally_serial_no', $distributor->tally_serial)
+            ->orderBy('batch_id', 'desc')
+            ->orderBy('tcp_filename', 'asc')
+            ->paginate(20);
+
+        $latestBatchId = TdlAddon::where('tally_serial_no', $distributor->tally_serial)->max('batch_id');
+            
+        return view('distributors.tdl_addons', compact('distributor', 'addons', 'latestBatchId'));
+    }
+
+    public function companyFeatures(Distributor $distributor)
+    {
+        Gate::authorize('distributor.view');
+        
+        $features = CompanyFeature::where('tally_serial_no', $distributor->tally_serial)
+            ->where('dist_name', $distributor->name)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return view('distributors.company_features', compact('distributor', 'features'));
     }
 }

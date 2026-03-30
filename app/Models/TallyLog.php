@@ -14,8 +14,6 @@ class TallyLog extends Model
     const UPDATED_AT = null;
 
     protected $fillable = [
-        'pid',
-        'distributor_id',
         'tally_serial_no',
         'tally_version',
         'tally_release',
@@ -25,19 +23,5 @@ class TallyLog extends Model
         'created_at'
     ];
 
-    /**
-     * Get the principal company for the log.
-     */
-    public function company()
-    {
-        return $this->belongsTo(Company::class, 'pid', 'pid');
-    }
-
-    /**
-     * Get the distributor for the log.
-     */
-    public function distributor()
-    {
-        return $this->belongsTo(Distributor::class, 'distributor_id', 'code');
-    }
+// Removed company/distributor relations to match simplified schema
 }

@@ -1,8 +1,7 @@
-@extends('layouts.app', ['breadcrumb' => 'Distributor', 'breadcrumbRight' => 'Dashboard -> Primary Setup -> Distributor'])
+@extends('layouts.app', ['breadcrumb' => 'Distributor', 'breadcrumbRight' => 'Dashboard->Primary Setup->Distributor'])
 
 @section('content')
-    <div class="p-4 max-w-full">
-
+    <div class="max-w-full">
 
         <!-- Card Container -->
         <div class="bg-white rounded shadow-sm border border-gray-200">
@@ -44,7 +43,7 @@
                             <th>State</th>
                             <th>City</th>
                             <th>Created At</th>
-                            <th>Updated At</th>
+                            <th>Last Sync</th>
                             <th>Status</th>
                             <th>ACTION</th>
                         </tr>
@@ -61,10 +60,25 @@
                                 <td>{{ $distributor->geoState->name ?? $distributor->state }}</td>
                                 <td>{{ $distributor->geoCity->name ?? $distributor->city }}</td>
                                 <td>{{ $distributor->created_at->format('d/m/Y') }}</td>
-                                <td>{{ $distributor->updated_at->format('d/m/Y') }}</td>
+                                <td>{{ $distributor->last_sync_date ? $distributor->last_sync_date->format('d/m/Y') : 'Never' }}
+                                </td>
                                 <td>{{ $distributor->status }}</td>
                                 <td>
                                     <div class="flex justify-center space-x-1">
+                                        @can('distributor.view')
+                                            {{-- <a href="{{ route('distributors.tally-details', $distributor->id) }}"
+                                                title="Tally Details">
+                                                <i data-lucide="clipboard-list" class="text-blue-600 h-5 w-5"></i>
+                                            </a> --}}
+                                            <a href="{{ route('distributors.tdl-addons', $distributor->id) }}"
+                                                title="TDL Addons">
+                                                <i data-lucide="puzzle" class="text-orange-600 h-5 w-5"></i>
+                                            </a>
+                                            <a href="{{ route('distributors.company-features', $distributor->id) }}"
+                                                title="Company Features">
+                                                <i data-lucide="settings-2" class="text-green-600 h-5 w-5"></i>
+                                            </a>
+                                        @endcan
                                         @can('distributor.edit')
                                             <a href="{{ route('distributors.edit', $distributor->id) }}" title="Edit">
                                                 <x-icons.edit-circle class="text-primary-0 h-5 w-5" />
@@ -82,7 +96,9 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="12" class="px-3 py-6 text-center text-gray-500 text-xs">No distributors found</td>
+                                <td colspan="12" class="px-3 text-center text-gray-500 text-xs">No distributors
+                                    found
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -90,11 +106,9 @@
             </div>
 
             <!-- Pagination -->
-            <x-pagination :currentPage="$distributors->currentPage()" :totalPages="$distributors->lastPage()"
-                :totalRecords="$distributors->total()" :perPage="$distributors->perPage()"
+            <x-pagination :currentPage="$distributors->currentPage()" :totalPages="$distributors->lastPage()" :totalRecords="$distributors->total()" :perPage="$distributors->perPage()"
                 baseUrl="{{ route('distributors.index') }}" />
         </div>
     </div>
-
     @include('components.confirm-modal')
 @endsection

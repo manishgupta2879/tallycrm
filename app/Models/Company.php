@@ -32,6 +32,6 @@ class Company extends Model
     protected $casts = [
         'd_types' => 'array',
         'd_parameter' => 'array',
-        'c_urls' => 'array',
+        'c_urls' => 'encrypted:array',
     ];
 }

@@ -1,4 +1,4 @@
-@extends('layouts.app', ['breadcrumb' => 'Role', 'breadcrumbRight' => 'Dashboard -> Primary Setup -> Role'])
+@extends('layouts.app', ['breadcrumb' => 'Role', 'breadcrumbRight' => 'Dashboard->Primary Setup->Role'])
 
 @section('content')
     <div class="p-4 max-w-full">
@@ -69,7 +69,8 @@
                                                     <x-icons.trash-circle class="text-red-600 hover:text-red-800 h-5 w-5" />
                                                 </button>
                                             @else
-                                                <span class="cursor-not-allowed opacity-50" title="Cannot delete - users assigned">
+                                                <span class="cursor-not-allowed opacity-50"
+                                                    title="Cannot delete - users assigned">
                                                     <x-icons.trash-circle class="text-gray-400 h-5 w-5" />
                                                 </span>
                                             @endif
@@ -79,7 +80,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-3 py-6 text-center text-gray-500 text-xs">
+                                <td colspan="5" class="px-3 text-center text-gray-500 text-xs">
                                     No roles found
                                 </td>
                             </tr>
@@ -89,8 +90,8 @@
             </div>
 
             <!-- Pagination -->
-            <x-pagination :currentPage="$roles->currentPage()" :totalPages="$roles->lastPage()"
-                :totalRecords="$roles->total()" :perPage="$roles->perPage()" baseUrl="{{ route('roles.index') }}" />
+            <x-pagination :currentPage="$roles->currentPage()" :totalPages="$roles->lastPage()" :totalRecords="$roles->total()" :perPage="$roles->perPage()"
+                baseUrl="{{ route('roles.index') }}" />
         </div>
     </div>
 

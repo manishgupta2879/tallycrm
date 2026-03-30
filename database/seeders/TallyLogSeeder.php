@@ -12,35 +12,16 @@ class TallyLogSeeder extends Seeder
      */
     public function run(): void
     {
-        $distributor = \App\Models\Distributor::first();
-
-        $logs = [
-            [
-                'pid' => 'SONNY001',
-                'distributor_id' => '',
-                'tally_serial_no' => '746470602',
+        for ($i = 0; $i < 50; $i++) {
+            \App\Models\TallyLog::create([
+                'tally_serial_no' => (string)rand(100000000, 999999999),
                 'tally_version' => 'TallyPrime Series A',
-                'tally_release' => '5.1',
-                'tally_edition' => 'Silver',
-                'account_id' => 'vidya21bhushan@gmail.com',
-                'tss_expiry_date' => '28-Feb-2025',
-                'created_at' => now(),
-            ],
-            [
-                'pid' => $distributor ? $distributor->company_code : 'SONNY001',
-                'distributor_id' => $distributor ? $distributor->code : '1010974',
-                'tally_serial_no' => '987654321',
-                'tally_version' => 'TallyPrime Series A',
-                'tally_release' => '5.0',
-                'tally_edition' => 'Gold',
-                'account_id' => 'test@example.com',
-                'tss_expiry_date' => '31-Mar-2025',
-                'created_at' => now(),
-            ]
-        ];
-
-        foreach ($logs as $log) {
-            \App\Models\TallyLog::create($log);
+                'tally_release' => '5.' . rand(0, 5),
+                'tally_edition' => rand(0, 1) ? 'Silver' : 'Gold',
+                'account_id' => 'user_' . rand(100, 999) . '@example.com',
+                'tss_expiry_date' => now()->addMonths(rand(1, 12))->format('d-M-Y'),
+                'created_at' => now()->subDays(rand(0, 30)),
+            ]);
         }
     }
 }

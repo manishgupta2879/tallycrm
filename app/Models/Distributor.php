@@ -62,16 +62,18 @@ class Distributor extends Model
         'rollout_done_by',
         'rollout_remarks',
         'remarks_date',
+        // Sync information
+        'dist_perm_pass',
+        'last_sync_date',
+        'no_of_sync_urls',
+        'c_urls',
     ];
 
     protected $casts = [
         'params' => 'array',
         'tally_cloud' => 'boolean',
-        'tally_expiry' => 'date',
-        'rollout_request_date' => 'date',
-        'tcp_generated_date' => 'date',
-        'rollout_done_date' => 'date',
-        'remarks_date' => 'date',
+        'c_urls' => 'encrypted:array',
+        'dist_perm_pass' => 'encrypted',
     ];
 
     /**
@@ -116,8 +118,15 @@ class Distributor extends Model
     protected function tallyExpiry(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('d/m/Y') : '',
-            set: fn ($value) => $value ? \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') : null,
+            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
+            set: function ($value) {
+                if (!$value) return null;
+                try {
+                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
+                }
+            },
         );
     }
 
@@ -127,8 +136,15 @@ class Distributor extends Model
     protected function rolloutRequestDate(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('d/m/Y') : '',
-            set: fn ($value) => $value ? \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') : null,
+            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
+            set: function ($value) {
+                if (!$value) return null;
+                try {
+                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
+                }
+            },
         );
     }
 
@@ -138,8 +154,15 @@ class Distributor extends Model
     protected function tcpGeneratedDate(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('d/m/Y') : '',
-            set: fn ($value) => $value ? \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') : null,
+            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
+            set: function ($value) {
+                if (!$value) return null;
+                try {
+                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
+                }
+            },
         );
     }
 
@@ -149,8 +172,15 @@ class Distributor extends Model
     protected function rolloutDoneDate(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('d/m/Y') : '',
-            set: fn ($value) => $value ? \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') : null,
+            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
+            set: function ($value) {
+                if (!$value) return null;
+                try {
+                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
+                }
+            },
         );
     }
 
@@ -160,8 +190,33 @@ class Distributor extends Model
     protected function remarksDate(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('d/m/Y') : '',
-            set: fn ($value) => $value ? \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') : null,
+            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
+            set: function ($value) {
+                if (!$value) return null;
+                try {
+                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
+                }
+            },
+        );
+    }
+    protected function lastSyncDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
+            set: function ($value) {
+                if (!$value) return null;
+                try {
+                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    try {
+                        return \Carbon\Carbon::createFromFormat('d-M-Y', $value)->format('Y-m-d');
+                    } catch (\Exception $ex) {
+                        return \Carbon\Carbon::parse($value)->format('Y-m-d');
+                    }
+                }
+            },
         );
     }
 }

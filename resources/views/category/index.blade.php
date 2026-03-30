@@ -1,4 +1,4 @@
-@extends('layouts.app', ['breadcrumb' => 'Categories', 'breadcrumbRight' => 'Dashboard -> Additional Opportunity -> Categories'])
+@extends('layouts.app', ['breadcrumb' => 'Categories', 'breadcrumbRight' => 'Dashboard->Additional Opportunity->Categories'])
 {{-- @dd('testing'); --}}
 @section('content')
     <div class="p-4 max-w-full">
@@ -57,7 +57,8 @@
                                 <td>
                                     <div class="flex justify-center space-x-1">
                                         @can('categories.edit')
-                                            <a href="{{ route('categories.edit', $category->id) }}" class="" title="Edit">
+                                            <a href="{{ route('categories.edit', $category->id) }}" class=""
+                                                title="Edit">
                                                 <x-icons.edit-circle class="text-primary-0 h-5 w-5" />
                                             </a>
                                         @endcan
@@ -69,7 +70,8 @@
                                                     <x-icons.trash-circle class="text-red-600 hover:text-red-800 h-5 w-5" />
                                                 </button>
                                             @else
-                                                <span class="cursor-not-allowed opacity-50" title="Cannot delete - users assigned">
+                                                <span class="cursor-not-allowed opacity-50"
+                                                    title="Cannot delete - users assigned">
                                                     <x-icons.trash-circle class="text-gray-400 h-5 w-5" />
                                                 </span>
                                             @endif
@@ -79,7 +81,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-3 py-6 text-center text-gray-500 text-xs">
+                                <td colspan="5" class="px-3 text-center text-gray-500 text-xs">
                                     No roles found
                                 </td>
                             </tr>
@@ -89,8 +91,8 @@
             </div>
 
             <!-- Pagination -->
-            <x-pagination :currentPage="$categorys->currentPage()" :totalPages="$categorys->lastPage()"
-                :totalRecords="$categorys->total()" :perPage="$categorys->perPage()" baseUrl="{{ route('categories.index') }}" />
+            <x-pagination :currentPage="$categorys->currentPage()" :totalPages="$categorys->lastPage()" :totalRecords="$categorys->total()" :perPage="$categorys->perPage()"
+                baseUrl="{{ route('categories.index') }}" />
         </div>
     </div>
 

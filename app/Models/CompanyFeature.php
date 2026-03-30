@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class CompanyFeature extends Model
+{
+    protected $fillable = [
+        'tally_serial_no',
+        'dist_name',
+        'state_name',
+        'country_name',
+        'mobile_numbers',
+        'corporate_identity_no',
+        'income_tax_number',
+        'is_tcs_on',
+        'is_tds_on',
+        'tan_number',
+        'tds_deductor_type',
+        'person_responsible_flat_no',
+        'person_responsible_premises',
+        'person_responsible_mobile',
+        'person_responsible_phone',
+        'person_responsible_email',
+        'person_responsible_state',
+        'is_gst_on',
+        'gst_no',
+        'gst_user_name',
+        'gst_signing_mode',
+        'is_e_invoice_applicable',
+        'e_invoice_applicable_date',
+        'e_invoice_bill_from_place',
+        'is_e_way_bill_applicable',
+        'e_way_bill_applicable_date',
+        'e_way_bill_has_interstate',
+        'e_way_bill_address_type',
+        'e_way_bill_applicable_type',
+        'e_way_bill_inter_state_threshold',
+        'msme_enterprise_type',
+        'msme_udyam_reg_no',
+        'msme_activity_type',
+        'is_accounting_on',
+        'is_inventory_on',
+        'is_integrated',
+        'is_bill_wise_on',
+        'is_cost_centres_on',
+        'is_interest_on',
+        'is_batch_wise_on',
+        'is_perishable_on',
+        'is_chq_printing_on',
+        'use_zero_entries',
+        'is_payroll_on',
+        'is_discounts_on',
+        'use_price_levels',
+        'is_payment_request_on',
+        'is_multi_address_on',
+        'is_job_work_on',
+    ];
+}

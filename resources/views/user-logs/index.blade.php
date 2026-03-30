@@ -1,4 +1,4 @@
-@extends('layouts.app', ['breadcrumb' => 'User Logs', 'breadcrumbRight' => 'System -> User Logs'])
+@extends('layouts.app', ['breadcrumb' => 'User Logs', 'breadcrumbRight' => 'System->User Logs'])
 
 @section('content')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -25,7 +25,8 @@
                                 class="w-full text-xs border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 py-1 px-2 select2-basic">
                                 <option value="">All Users</option>
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                    <option value="{{ $user->id }}"
+                                        {{ request('user_id') == $user->id ? 'selected' : '' }}>
                                         {{ $user->name }}
                                     </option>
                                 @endforeach
@@ -49,7 +50,8 @@
                                 class="w-full text-xs border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 py-1 px-2">
                                 <option value="">Year</option>
                                 @foreach (range(date('Y'), date('Y') - 5) as $y)
-                                    <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                    <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>
+                                        {{ $y }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -85,7 +87,8 @@
                     </div>
                     <div class="relative inline-block group">
                         <x-primary-button>More Links <i data-lucide="chevron-down" class="w-4 h-4"></i></x-primary-button>
-                        <div class="absolute z-50 right-0 mt-2 w-40 bg-white border border-gray-200 shadow-lg hidden group-hover:block text-xs">
+                        <div
+                            class="absolute z-50 right-0 mt-2 w-40 bg-white border border-gray-200 shadow-lg hidden group-hover:block text-xs">
                             @can('users.view')
                                 <a href="{{ route('users.index') }}" class="block px-3 py-2 hover:bg-gray-100">User List</a>
                             @endcan
@@ -113,10 +116,12 @@
                         <tbody class="divide-y divide-gray-100">
                             @forelse ($logs as $sn => $log)
                                 @php
-                                    $details  = unserialize($log->detail) ?: [];
-                                    $total    = count($details);
-                                    $counts   = collect($details)->groupBy('action')->map(fn($g) => $g->count());
-                                    $preview  = collect($details)->first(fn($d) => !in_array($d['action'] ?? '', ['LOGIN','LOGOUT']));
+                                    $details = unserialize($log->detail) ?: [];
+                                    $total = count($details);
+                                    $counts = collect($details)->groupBy('action')->map(fn($g) => $g->count());
+                                    $preview = collect($details)->first(
+                                        fn($d) => !in_array($d['action'] ?? '', ['LOGIN', 'LOGOUT']),
+                                    );
                                 @endphp
                                 <tr class="hover:bg-gray-50 transition group align-top">
 
@@ -125,9 +130,10 @@
 
                                     {{-- Login At --}}
                                     <td class="px-3 py-2.5 whitespace-nowrap">
-                                        @if($log->log_in)
+                                        @if ($log->log_in)
                                             <div class="text-gray-700">{{ $log->log_in->format('d/m/Y') }}</div>
-                                            <div class="text-[10px] text-gray-400">{{ $log->log_in->format('H:i:s') }}</div>
+                                            <div class="text-[10px] text-gray-400">{{ $log->log_in->format('H:i:s') }}
+                                            </div>
                                         @else
                                             <span class="text-gray-300">—</span>
                                         @endif
@@ -141,27 +147,38 @@
 
                                     {{-- Summary --}}
                                     <td class="px-3 py-2.5">
-                                        @if($total === 0)
+                                        @if ($total === 0)
                                             <span class="text-[10px] text-gray-300">No activity</span>
                                         @else
                                             <div class="flex flex-wrap items-center gap-1">
-                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">{{ $total }} actions</span>
+                                                <span
+                                                    class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">{{ $total }}
+                                                    actions</span>
 
-                                                @if(isset($counts['LOGIN']))
-                                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600">{{ $counts['LOGIN'] }} login</span>
+                                                @if (isset($counts['LOGIN']))
+                                                    <span
+                                                        class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600">{{ $counts['LOGIN'] }}
+                                                        login</span>
                                                 @endif
-                                                @if(isset($counts['CREATE']))
-                                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-50 text-green-600">{{ $counts['CREATE'] }} create</span>
+                                                @if (isset($counts['CREATE']))
+                                                    <span
+                                                        class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-50 text-green-600">{{ $counts['CREATE'] }}
+                                                        create</span>
                                                 @endif
-                                                @if(isset($counts['UPDATE']))
-                                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-orange-50 text-orange-500">{{ $counts['UPDATE'] }} update</span>
+                                                @if (isset($counts['UPDATE']))
+                                                    <span
+                                                        class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-orange-50 text-orange-500">{{ $counts['UPDATE'] }}
+                                                        update</span>
                                                 @endif
-                                                @if(isset($counts['DELETE']))
-                                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-600">{{ $counts['DELETE'] }} delete</span>
+                                                @if (isset($counts['DELETE']))
+                                                    <span
+                                                        class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-600">{{ $counts['DELETE'] }}
+                                                        delete</span>
                                                 @endif
                                             </div>
-                                            @if($preview)
-                                                <div class="text-[10px] text-gray-400 mt-0.5 truncate max-w-sm" title="{{ $preview['detail'] ?? '' }}">
+                                            @if ($preview)
+                                                <div class="text-[10px] text-gray-400 mt-0.5 truncate max-w-sm"
+                                                    title="{{ $preview['detail'] ?? '' }}">
                                                     {{ Str::limit($preview['detail'] ?? '', 70) }}
                                                 </div>
                                             @endif
@@ -170,9 +187,10 @@
 
                                     {{-- Last Active --}}
                                     <td class="px-3 py-2.5 whitespace-nowrap">
-                                        @if($log->last_activity)
+                                        @if ($log->last_activity)
                                             <div class="text-gray-700">{{ $log->last_activity->format('d/m/Y') }}</div>
-                                            <div class="text-[10px] text-gray-400">{{ $log->last_activity->format('H:i:s') }}</div>
+                                            <div class="text-[10px] text-gray-400">
+                                                {{ $log->last_activity->format('H:i:s') }}</div>
                                         @else
                                             <span class="text-gray-300">—</span>
                                         @endif
@@ -180,9 +198,10 @@
 
                                     {{-- Logout --}}
                                     <td class="px-3 py-2.5 whitespace-nowrap">
-                                        @if($log->log_out)
+                                        @if ($log->log_out)
                                             <div class="text-gray-700">{{ $log->log_out->format('d/m/Y') }}</div>
-                                            <div class="text-[10px] text-gray-400">{{ $log->log_out->format('H:i:s') }}</div>
+                                            <div class="text-[10px] text-gray-400">{{ $log->log_out->format('H:i:s') }}
+                                            </div>
                                         @else
                                             <span class="text-gray-400">—</span>
                                         @endif
@@ -199,7 +218,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-3 py-10 text-center text-gray-400 text-xs italic">
+                                    <td colspan="7" class="px-3 text-center text-gray-400 text-xs italic">
                                         No activity logs found.
                                     </td>
                                 </tr>
@@ -209,8 +228,7 @@
                 </div>
 
                 @if ($logs->hasPages())
-                    <x-pagination :currentPage="$logs->currentPage()" :totalPages="$logs->lastPage()"
-                        :totalRecords="$logs->total()" :perPage="$logs->perPage()"
+                    <x-pagination :currentPage="$logs->currentPage()" :totalPages="$logs->lastPage()" :totalRecords="$logs->total()" :perPage="$logs->perPage()"
                         baseUrl="{{ route('user-logs.index') }}" />
                 @endif
             </div>
@@ -220,19 +238,27 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            $('.select2-basic').select2({ allowClear: true, width: '100%', placeholder: 'All Users' });
+        document.addEventListener('DOMContentLoaded', function() {
+            $('.select2-basic').select2({
+                allowClear: true,
+                width: '100%',
+                placeholder: 'All Users'
+            });
             if (typeof lucide !== 'undefined') lucide.createIcons();
         });
+
         function toggleFilters() {
             const sidebar = document.getElementById('filterSidebar');
-            const icon    = document.getElementById('toggleIcon');
-            const input   = document.getElementById('showFiltersInput');
-            const hidden  = sidebar.classList.contains('hidden');
+            const icon = document.getElementById('toggleIcon');
+            const input = document.getElementById('showFiltersInput');
+            const hidden = sidebar.classList.contains('hidden');
             sidebar.classList.toggle('hidden', !hidden);
             icon.classList.toggle('rotate-180', !hidden);
             input.value = hidden ? 'true' : 'false';
         }
-        function exportExcel() { alert('Exporting to Excel...'); }
+
+        function exportExcel() {
+            alert('Exporting to Excel...');
+        }
     </script>
 @endsection

@@ -1,3 +1,7 @@
+html {
+    overflow: hidden;
+}
+
 table {
     font-family: arial, helvetica, sans-serif;
 }
@@ -9,6 +13,7 @@ table tbody td {
     vertical-align: middle;
     white-space: nowrap;
     font-size: 12px;
+    height: 1.3rem !important;
 }
 
 table thead th,

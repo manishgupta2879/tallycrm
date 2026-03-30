@@ -81,6 +81,19 @@ class DistributorService
             }
         }
         $data['params'] = $params;
+        
+        // Handle multiple sync URLs
+        if (isset($data['sync_urls'])) {
+            $syncurls = [];
+            foreach ($data['sync_urls'] as $url) {
+                if ($url) {
+                    $syncurls[] = $url;
+                }
+            }
+            $data['c_urls'] = $syncurls;
+            // Update no_of_sync_urls column as well for consistency
+            $data['no_of_sync_urls'] = (string)count($syncurls);
+        }
 
         return $data;
     }

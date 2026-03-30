@@ -32,7 +32,10 @@
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-[#E5E5E5] flex flex-col">
         <!-- App Header -->
-        @include('components.app-header', ['breadcrumb' => $breadcrumb ?? 'Dashboard', 'breadcrumbRight' => $breadcrumbRight ?? 'Home'])
+        @include('components.app-header', [
+            'breadcrumb' => $breadcrumb ?? 'Dashboard',
+            'breadcrumbRight' => $breadcrumbRight ?? 'Home',
+        ])
 
         <!-- Flash Alerts -->
         <div>
@@ -40,7 +43,7 @@
         </div>
 
         <!-- Page Content -->
-        <main class="flex-1">
+        <main class="flex-1 p-4">
             @yield('content')
         </main>
 
@@ -77,6 +80,15 @@
                 const form = btn.closest('form');
                 if (form) form.submit();
             }
+
+            window.addEventListener("scroll", () => {
+                const stickyHeader = document.getElementById("stickyHeader");
+                if (window.scrollY > 10) {
+                    stickyHeader.classList.add("shadow-md");
+                } else {
+                    stickyHeader.classList.remove("shadow-md");
+                }
+            });
         </script>
     </div>
 </body>

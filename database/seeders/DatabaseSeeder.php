@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(CompanySeeder::class);  
         // Create permissions first
         $this->call(PermissionsSeeder::class);
 
@@ -23,7 +24,10 @@ class DatabaseSeeder extends Seeder
         // Create admin user with company
         $this->call(AdminUserSeeder::class);
 
-        // Optionally create test users
-        // User::factory(10)->create();
+        // Required default records
+        $this->call(DefaultCompanySeeder::class);
+
+    // Optionally create test users
+    // User::factory(10)->create();
     }
 }

@@ -57,6 +57,13 @@ class CompanySeeder extends Seeder
                     "Password"
                 ],
                 "url_parameters" => ["URL", "User Name"]
+            ],
+            [
+                "company_pid" => "UNCATEGORIZED",
+                "company_name" => "Uncategorized Principals",
+                "distributor_type" => ["GENERAL"],
+                "distributor_parameters" => ["Remarks"],
+                "url_parameters" => []
             ]
         ];
 
@@ -90,7 +97,7 @@ class CompanySeeder extends Seeder
                 'status' => 'Active',
                 'd_types' => $data['distributor_type'],
                 'd_parameter' => $data['distributor_parameters'],
-                'c_urls' => !empty($urlData) ? Crypt::encryptString(json_encode($urlData)) : null,
+                'c_urls' => !empty($urlData) ? $urlData : null,
                 'no_of_urls' => count($urlData),
             ]);
         }

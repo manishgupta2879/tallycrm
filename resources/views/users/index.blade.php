@@ -1,7 +1,7 @@
-@extends('layouts.app', ['breadcrumb' => 'User', 'breadcrumbRight' => 'Dashboard -> Primary Setup -> User'])
+@extends('layouts.app', ['breadcrumb' => 'User', 'breadcrumbRight' => 'Dashboard->Primary Setup->User'])
 
 @section('content')
-    <div class="p-4 max-w-full">
+    <div class="max-w-full">
 
 
 
@@ -96,7 +96,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-3 py-6 text-center text-gray-500 text-xs">
+                                <td colspan="6" class="px-3 text-center text-gray-500 text-xs">
                                     No users found
                                 </td>
                             </tr>
@@ -106,13 +106,8 @@
             </div>
 
             <!-- Pagination -->
-            <x-pagination
-                :currentPage="$users->currentPage()"
-                :totalPages="$users->lastPage()"
-                :totalRecords="$users->total()"
-                :perPage="$users->perPage()"
-                baseUrl="{{ route('users.index') }}"
-            />
+            <x-pagination :currentPage="$users->currentPage()" :totalPages="$users->lastPage()" :totalRecords="$users->total()" :perPage="$users->perPage()"
+                baseUrl="{{ route('users.index') }}" />
         </div>
     </div>
 

@@ -86,7 +86,7 @@ class CompanyService
                 });
                 
                 if (!empty($filteredUrls)) {
-                    $data['c_urls'] = Crypt::encryptString(json_encode($filteredUrls));
+                    $data['c_urls'] = $filteredUrls;
                 } else {
                     $data['c_urls'] = null;
                 }

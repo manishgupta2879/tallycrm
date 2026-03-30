@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+return new class extends Migration 
 {
     /**
      * Run the migrations.
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('territory')->nullable();
             $table->json('d_types')->nullable();
             $table->json('d_parameter')->nullable();
-            $table->json('c_urls')->nullable();
+            $table->text('c_urls')->nullable();
             $table->integer('no_of_urls')->default(0);
             $table->string('status')->default('Active');
             $table->timestamps();

@@ -94,11 +94,16 @@ class CompanyController extends Controller
         Gate::authorize('company.edit');
 
         try {
-            $rawUrls = $company->getRawOriginal('c_urls');
-            $urls = $rawUrls ? json_decode(Crypt::decryptString($rawUrls), true) : [];
-            return response()->json(['success' => true, 'urls' => $urls]);
+            $urls = $company->c_urls;
+
+            // Handle legacy double-encrypted data if still present
+            if (is_string($urls)) {
+                $urls = json_decode(Crypt::decryptString($urls), true);
+            }
+
+            return response()->json(['success' => true, 'urls' => $urls ?? []]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to decrypt URLs.'], 400);
+            return response()->json(['success' => false, 'message' => 'Failed to decrypt URLs ('. $e->getMessage() .').'], 400);
         }
     }
 
