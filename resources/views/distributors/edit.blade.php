@@ -264,6 +264,26 @@
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
+                                <!-- TAN No -->
+                                <div>
+                                    <label class="block text-gray-700 font-semibold text-xs mb-1">TAN No</label>
+                                    <input type="text" name="tan_no" value="{{ old('tan_no', $distributor->tan_no) }}"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        placeholder="TAN Number">
+                                    @error('tan_no')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <!-- MSME No -->
+                                <div>
+                                    <label class="block text-gray-700 font-semibold text-xs mb-1">MSME No</label>
+                                    <input type="text" name="msme_no" value="{{ old('msme_no', $distributor->msme_no) }}"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        placeholder="MSME Number">
+                                    @error('msme_no')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
 

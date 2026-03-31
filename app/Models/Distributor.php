@@ -67,6 +67,8 @@ class Distributor extends Model
         'last_sync_date',
         'no_of_sync_urls',
         'c_urls',
+        'tan_no',
+        'msme_no',
     ];
 
     protected $casts = [
@@ -115,108 +117,113 @@ class Distributor extends Model
     /**
      * Modern Attribute: Tally Expiry
      */
-    protected function tallyExpiry(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
-            set: function ($value) {
-                if (!$value) return null;
-                try {
-                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-                } catch (\Exception $e) {
-                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
-                }
-            },
-        );
-    }
+    // protected function tallyExpiry(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
+    //         set: function ($value) {
+    //             if (!$value)
+    //                 return null;
+    //             try {
+    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+    //             } catch (\Exception $e) {
+    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
+    //             }
+    //         },
+    //     );
+    // }
 
     /**
      * Modern Attribute: Rollout Request Date
      */
-    protected function rolloutRequestDate(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
-            set: function ($value) {
-                if (!$value) return null;
-                try {
-                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-                } catch (\Exception $e) {
-                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
-                }
-            },
-        );
-    }
+    // protected function rolloutRequestDate(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
+    //         set: function ($value) {
+    //             if (!$value)
+    //                 return null;
+    //             try {
+    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+    //             } catch (\Exception $e) {
+    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
+    //             }
+    //         },
+    //     );
+    // }
 
     /**
      * Modern Attribute: TCP Generated Date
      */
-    protected function tcpGeneratedDate(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
-            set: function ($value) {
-                if (!$value) return null;
-                try {
-                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-                } catch (\Exception $e) {
-                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
-                }
-            },
-        );
-    }
+    // protected function tcpGeneratedDate(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
+    //         set: function ($value) {
+    //             if (!$value)
+    //                 return null;
+    //             try {
+    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+    //             } catch (\Exception $e) {
+    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
+    //             }
+    //         },
+    //     );
+    // }
 
     /**
      * Modern Attribute: Rollout Done Date
      */
-    protected function rolloutDoneDate(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
-            set: function ($value) {
-                if (!$value) return null;
-                try {
-                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-                } catch (\Exception $e) {
-                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
-                }
-            },
-        );
-    }
+    // protected function rolloutDoneDate(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
+    //         set: function ($value) {
+    //             if (!$value) return null;
+    //             try {
+    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+    //             } catch (\Exception $e) {
+    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
+    //             }
+    //         },
+    //     );
+    // }
 
     /**
      * Modern Attribute: Remarks Date
      */
-    protected function remarksDate(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
-            set: function ($value) {
-                if (!$value) return null;
-                try {
-                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-                } catch (\Exception $e) {
-                    return \Carbon\Carbon::parse($value)->format('Y-m-d');
-                }
-            },
-        );
-    }
-    protected function lastSyncDate(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
-            set: function ($value) {
-                if (!$value) return null;
-                try {
-                    return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-                } catch (\Exception $e) {
-                    try {
-                        return \Carbon\Carbon::createFromFormat('d-M-Y', $value)->format('Y-m-d');
-                    } catch (\Exception $ex) {
-                        return \Carbon\Carbon::parse($value)->format('Y-m-d');
-                    }
-                }
-            },
-        );
-    }
+    // protected function remarksDate(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
+    //         set: function ($value) {
+    //             if (!$value)
+    //                 return null;
+    //             try {
+    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+    //             } catch (\Exception $e) {
+    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
+    //             }
+    //         },
+    //     );
+    // }
+    // protected function lastSyncDate(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
+    //         set: function ($value) {
+    //             if (!$value)
+    //                 return null;
+    //             try {
+    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+    //             } catch (\Exception $e) {
+    //                 try {
+    //                     return \Carbon\Carbon::createFromFormat('d-M-Y', $value)->format('Y-m-d');
+    //                 } catch (\Exception $ex) {
+    //                     return \Carbon\Carbon::parse($value)->format('Y-m-d');
+    //                 }
+    //             }
+    //         },
+    //     );
+    // }
 }

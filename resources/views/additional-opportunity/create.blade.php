@@ -1,7 +1,7 @@
 @extends('layouts.app', ['breadcrumb' => 'Additional Opportunities', 'breadcrumbRight' => 'Dashboard->Additional Opportunity->Additional Oopportunities'])
 
 @section('content')
-    <div class="p-4 max-w-full">
+    <div class="max-w-full">
         <div class="bg-white rounded shadow-sm border border-gray-200">
             <div class="flex items-center justify-between py-2 px-3 border-b border-gray-200">
                 <h6>Create Additional Opportunity</h6>

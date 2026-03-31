@@ -40,6 +40,8 @@ class UpdateDistributorRequest extends FormRequest
             'pincode' => 'nullable|string|max:10',
             'gst_number' => ['nullable', 'string'],
             'pan_number' => ['nullable', 'string'   ],
+            'tan_no' => 'nullable|string|max:50',
+            'msme_no' => 'nullable|string|max:50',
             'dist_perm_pass' => 'nullable|string|max:100',
             'last_sync_date' => 'nullable|string',
             'no_of_sync_urls' => 'nullable|string|max:10',

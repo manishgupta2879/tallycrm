@@ -28,6 +28,9 @@ return new class extends Migration {
 
             $table->string('gst_number', 15)->nullable();
             $table->string('pan_number', 10)->nullable();
+            $table->string('tan_no', 50)->nullable();
+            $table->string('msme_no', 50)->nullable();
+
 
             // Distributor Params (Max 10)
             for ($i = 1; $i <= 10; $i++) {
@@ -52,18 +55,18 @@ return new class extends Migration {
 
             // Sync information
             $table->text('dist_perm_pass')->nullable();
-            $table->date('last_sync_date')->nullable();
+            $table->string('last_sync_date')->nullable();
             $table->string('no_of_sync_urls')->nullable();
             $table->json('c_urls')->nullable();
 
 
             // Rollout / Additional Details
-            $table->date('rollout_request_date')->nullable();
-            $table->date('tcp_generated_date')->nullable();
-            $table->date('rollout_done_date')->nullable();
+            $table->string('rollout_request_string')->nullable();
+            $table->string('tcp_generated_date')->nullable();
+            $table->string('rollout_done_date')->nullable();
             $table->string('rollout_done_by')->nullable();
             $table->text('rollout_remarks')->nullable();
-            $table->date('remarks_date')->nullable();
+            $table->string('remarks_date')->nullable();
 
             $table->string('status')->default('Active')->index();
             $table->json('params')->nullable(); // Dynamic parameters

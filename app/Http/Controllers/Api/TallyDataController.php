@@ -110,6 +110,8 @@ class TallyDataController extends Controller
                             'dist_perm_pass' => $distData['distpermpass'] ?? null,
                             'last_sync_date' => $distData['lastsyncdate'] ?? null,
                             'no_of_sync_urls' => $distData['noofsyncurls'] ?? null,
+                            'msme_no' => $distData['distmsmeno'] ?? null,
+                            'tan_no' => $distData['disttanno'] ?? null,
                             'c_urls' => !empty($distData['syncurls']) 
                                 ? (is_array($distData['syncurls'][0]) 
                                     ? array_column($distData['syncurls'], 'syncurl') 

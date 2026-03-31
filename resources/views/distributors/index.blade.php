@@ -60,7 +60,7 @@
                                 <td>{{ $distributor->geoState->name ?? $distributor->state }}</td>
                                 <td>{{ $distributor->geoCity->name ?? $distributor->city }}</td>
                                 <td>{{ $distributor->created_at->format('d/m/Y') }}</td>
-                                <td>{{ $distributor->last_sync_date ? $distributor->last_sync_date->format('d/m/Y') : 'Never' }}
+                                <td>{{ $distributor->last_sync_date}}
                                 </td>
                                 <td>{{ $distributor->status }}</td>
                                 <td>
