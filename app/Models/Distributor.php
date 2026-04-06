@@ -31,11 +31,8 @@ class Distributor extends Model
         'type',
         'company_code',
         'address',
-        'country',
-        'region',
-        'city',
-        'state',
-        'pincode',
+        'country', // string
+        'state',   // string
         'gst_number',
         'pan_number',
         'status',
@@ -47,8 +44,6 @@ class Distributor extends Model
         'tally_expiry',
         'tally_edition',
         'tally_net_id',
-        'tcp_version',
-        'tcp_source',
         'tally_users',
         'tally_deployed',
         'no_of_computers',
@@ -69,6 +64,10 @@ class Distributor extends Model
         'c_urls',
         'tan_no',
         'msme_no',
+        // New fields
+        'userid',
+        'authcode',
+        'authcode2',
     ];
 
     protected $casts = [
@@ -115,115 +114,74 @@ class Distributor extends Model
     }
 
     /**
-     * Modern Attribute: Tally Expiry
+     * Accessors and Mutators for formatted dates
      */
-    // protected function tallyExpiry(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
-    //         set: function ($value) {
-    //             if (!$value)
-    //                 return null;
-    //             try {
-    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-    //             } catch (\Exception $e) {
-    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
-    //             }
-    //         },
-    //     );
-    // }
+    protected function rolloutDoneDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn($v) => $this->formatDateDisplay($v),
+            set: fn($v) => $this->formatDateSave($v)
+        );
+    }
 
-    /**
-     * Modern Attribute: Rollout Request Date
-     */
-    // protected function rolloutRequestDate(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
-    //         set: function ($value) {
-    //             if (!$value)
-    //                 return null;
-    //             try {
-    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-    //             } catch (\Exception $e) {
-    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
-    //             }
-    //         },
-    //     );
-    // }
+    protected function lastSyncDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn($v) => $this->formatDateDisplay($v),
+            set: fn($v) => $this->formatDateSave($v)
+        );
+    }
 
-    /**
-     * Modern Attribute: TCP Generated Date
-     */
-    // protected function tcpGeneratedDate(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
-    //         set: function ($value) {
-    //             if (!$value)
-    //                 return null;
-    //             try {
-    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-    //             } catch (\Exception $e) {
-    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
-    //             }
-    //         },
-    //     );
-    // }
+    protected function tallyExpiry(): Attribute
+    {
+        return Attribute::make(
+            get: fn($v) => $this->formatDateDisplay($v),
+            set: fn($v) => $this->formatDateSave($v)
+        );
+    }
 
-    /**
-     * Modern Attribute: Rollout Done Date
-     */
-    // protected function rolloutDoneDate(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : null,
-    //         set: function ($value) {
-    //             if (!$value) return null;
-    //             try {
-    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-    //             } catch (\Exception $e) {
-    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
-    //             }
-    //         },
-    //     );
-    // }
+    protected function tcpGeneratedDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn($v) => $this->formatDateDisplay($v),
+            set: fn($v) => $this->formatDateSave($v)
+        );
+    }
 
-    /**
-     * Modern Attribute: Remarks Date
-     */
-    // protected function remarksDate(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
-    //         set: function ($value) {
-    //             if (!$value)
-    //                 return null;
-    //             try {
-    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-    //             } catch (\Exception $e) {
-    //                 return \Carbon\Carbon::parse($value)->format('Y-m-d');
-    //             }
-    //         },
-    //     );
-    // }
-    // protected function lastSyncDate(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn($value) => $value ? \Carbon\Carbon::parse($value) : null,
-    //         set: function ($value) {
-    //             if (!$value)
-    //                 return null;
-    //             try {
-    //                 return \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-    //             } catch (\Exception $e) {
-    //                 try {
-    //                     return \Carbon\Carbon::createFromFormat('d-M-Y', $value)->format('Y-m-d');
-    //                 } catch (\Exception $ex) {
-    //                     return \Carbon\Carbon::parse($value)->format('Y-m-d');
-    //                 }
-    //             }
-    //         },
-    //     );
-    // }
+    protected function rolloutRequestDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn($v) => $this->formatDateDisplay($v),
+            set: fn($v) => $this->formatDateSave($v)
+        );
+    }
+
+    protected function remarksDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn($v) => $this->formatDateDisplay($v),
+            set: fn($v) => $this->formatDateSave($v)
+        );
+    }
+
+    private function formatDateDisplay($value)
+    {
+        if (!$value) return $value;
+        try {
+            if (preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $value)) return $value;
+            return \Carbon\Carbon::parse($value)->format('d/m/Y');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    private function formatDateSave($value)
+    {
+        if (empty($value)) return null;
+        try {
+            return \Carbon\Carbon::parse($value)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }

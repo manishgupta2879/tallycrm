@@ -6,10 +6,14 @@
         <div class="bg-white rounded shadow-sm border border-gray-200">
             <div class="flex items-center justify-between py-2 px-3 border-b border-gray-200">
                 <h6>Edit Distributor</h6>
+
                 <div class="flex items-center space-x-1">
                     {{-- <a href="{{ route('distributors.tally-details', $distributor->id) }}" class="btn-secondary">
                         <i data-lucide="clipboard-list" class="h-4 w-4"></i> Tally Details
                     </a> --}}
+                    <a href="{{ route('distributors.parameters', $distributor->id) }}" class="btn-secondary">
+                        <i data-lucide="list" class="h-4 w-4"></i> Additional Parameters
+                    </a>
                     <a href="{{ route('distributors.tdl-addons', $distributor->id) }}" class="btn-secondary">
                         <i data-lucide="puzzle" class="h-4 w-4"></i> TDL Addons
                     </a>
@@ -33,7 +37,7 @@
                     <div class="overflow-x-auto px-4 relative" style="max-height: calc(100vh - 263px);">
 
 
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3 pt-2 sticky top-0 bg-white z-10 transition-shadow"
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 pt-2 sticky top-0 bg-white z-10 transition-shadow"
                             id="stickyHeader">
                             <!-- Distributor Code -->
                             <div>
@@ -59,14 +63,7 @@
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div>
-                                <label class="block text-gray-700 font-semibold text-xs mb-1">Distributor
-                                    Password</label>
-                                <input type="text" name="dist_perm_pass"
-                                    value="{{ old('dist_perm_pass', $distributor->dist_perm_pass) }}"
-                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                    placeholder="Distributor Password">
-                            </div>
+
                             <!-- Company -->
                             <div>
                                 <label class="block text-gray-700 font-semibold text-xs mb-1">Principal Company<span
@@ -103,26 +100,56 @@
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                        </div>
-
-                        <!-- Dynamic Parameters -->
-                        <div id="parameters-section" class="mb-3 hidden">
-                            <p
-                                class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
-                                Additional Parameters
-                            </p>
-                            <div id="parameters-container" class="grid grid-cols-1 md:grid-cols-5 gap-3">
-                                @for ($i = 1; $i <= 10; $i++)
-                                    <div id="param-group-{{ $i }}" class="hidden">
-                                        <label id="param-label-{{ $i }}"
-                                            class="block text-gray-700 font-semibold text-xs mb-1"></label>
-                                        <input type="text" name="d_parameter_{{ $i }}"
-                                            value="{{ old('d_parameter_' . $i, $distributor->params[$i] ?? '') }}"
-                                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
-                                    </div>
-                                @endfor
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">
+                                    Status<span class="text-red-500">*</span>
+                                </label>
+                                <select name="status" id="status" required
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
+                                    @foreach ($statusOptions as $option)
+                                        <option value="{{ $option }}"
+                                            {{ old('status', $distributor->status) === $option ? 'selected' : '' }}>
+                                            {{ $option }}</option>
+                                    @endforeach
+                                </select>
+                                @error('status')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3 mt-2">
+                            {{-- UserId --}}
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1"> User Id</label>
+                                <input type="text" name="userid" value="{{ old('userid', $distributor->userid) }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    placeholder="User Id">
+                            </div>
+                            {{-- Password --}}
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1"> Password</label>
+                                <input type="text" name="dist_perm_pass"
+                                    value="{{ old('dist_perm_pass', $distributor->dist_perm_pass) }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    placeholder="Password">
+                            </div>
+                            {{-- Auth Code --}}
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1"> Auth Code</label>
+                                <input type="text" name="authcode" value="{{ old('authcode', $distributor->authcode) }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    placeholder="Auth Code">
+                            </div>
+                            {{-- Auth Code2 --}}
+                            <div>
+                                <label class="block text-gray-700 font-semibold text-xs mb-1"> Auth Code2</label>
+                                <input type="text" name="authcode2"
+                                    value="{{ old('authcode2', $distributor->authcode2) }}"
+                                    class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    placeholder="Auth Code2">
+                            </div>
+                        </div>
+
 
                         <!-- Address Details -->
                         <div class="mb-3">
@@ -139,109 +166,30 @@
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3">
-                                <!-- Country -->
+                            <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mb-3">
+                                <!-- Country (String Input) -->
                                 <div>
-                                    <label for="country"
-                                        class="block text-gray-700 font-semibold text-xs mb-1">Country</label>
-                                    <select name="country" id="country"
-                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
-                                        <option value="">-- Select Country --</option>
-                                        @foreach ($countries as $c)
-                                            <option value="{{ $c->id }}"
-                                                {{ old('country', $distributor->country) == $c->id ? 'selected' : '' }}>
-                                                {{ $c->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <label class="block text-gray-700 font-semibold text-xs mb-1">Country</label>
+                                    <input type="text" name="country"
+                                        value="{{ old('country', $distributor->country) }}"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        placeholder="e.g., India">
                                     @error('country')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
 
-                                <!-- Region -->
+                                <!-- State (String Input) -->
                                 <div>
-                                    <label for="region" class="block text-gray-700 font-semibold text-xs mb-1">
-                                        Region
-                                        <span id="region-loader" class="hidden ml-1 inline-block">
-                                            <svg class="animate-spin h-3 w-3 text-blue-500 inline"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10"
-                                                    stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                </path>
-                                            </svg>
-                                        </span>
-                                    </label>
-                                    <select name="region" id="region"
-                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
-                                        <option value="">-- Select Region --</option>
-                                    </select>
-                                    @error('region')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- State -->
-                                <div>
-                                    <label for="state" class="block text-gray-700 font-semibold text-xs mb-1">
-                                        State
-                                        <span id="state-loader" class="hidden ml-1 inline-block">
-                                            <svg class="animate-spin h-3 w-3 text-blue-500 inline"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10"
-                                                    stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                </path>
-                                            </svg>
-                                        </span>
-                                    </label>
-                                    <select name="state" id="state"
-                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
-                                        <option value="">-- Select State --</option>
-                                    </select>
+                                    <label class="block text-gray-700 font-semibold text-xs mb-1">State</label>
+                                    <input type="text" name="state" value="{{ old('state', $distributor->state) }}"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        placeholder="e.g., Tamil Nadu">
                                     @error('state')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
 
-                                <!-- City -->
-                                <div>
-                                    <label for="city" class="block text-gray-700 font-semibold text-xs mb-1">
-                                        City
-                                        <span id="city-loader" class="hidden ml-1 inline-block">
-                                            <svg class="animate-spin h-3 w-3 text-blue-500 inline"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10"
-                                                    stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                </path>
-                                            </svg>
-                                        </span>
-                                    </label>
-                                    <select name="city" id="city"
-                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
-                                        <option value="">-- Select City --</option>
-                                    </select>
-                                    @error('city')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Pincode -->
-                                <div>
-                                    <label class="block text-gray-700 font-semibold text-xs mb-1">Pin Code</label>
-                                    <input type="text" name="pincode"
-                                        value="{{ old('pincode', $distributor->pincode) }}"
-                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                        placeholder="Pin Code">
-                                    @error('pincode')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
                                 <!-- GST Number -->
                                 <div>
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">GST No</label>
@@ -267,7 +215,8 @@
                                 <!-- TAN No -->
                                 <div>
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">TAN No</label>
-                                    <input type="text" name="tan_no" value="{{ old('tan_no', $distributor->tan_no) }}"
+                                    <input type="text" name="tan_no"
+                                        value="{{ old('tan_no', $distributor->tan_no) }}"
                                         class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                         placeholder="TAN Number">
                                     @error('tan_no')
@@ -277,7 +226,8 @@
                                 <!-- MSME No -->
                                 <div>
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">MSME No</label>
-                                    <input type="text" name="msme_no" value="{{ old('msme_no', $distributor->msme_no) }}"
+                                    <input type="text" name="msme_no"
+                                        value="{{ old('msme_no', $distributor->msme_no) }}"
                                         class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
                                         placeholder="MSME Number">
                                     @error('msme_no')
@@ -299,7 +249,7 @@
                                 $contacts = $distributor->contacts;
                                 $count = max(1, count($contacts));
                             @endphp
-                            <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-3">
+                            <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_auto] gap-3">
                                 <div><label class="block text-gray-700 font-semibold text-xs mb-1">Name</label>
                                     <input type="text" name="contact_name[]"
                                         value="{{ old('contact_name.0', $contacts[0]->name ?? '') }}"
@@ -337,6 +287,24 @@
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
+                                <div><label class="block text-gray-700 font-semibold text-xs mb-1">Fax</label>
+                                    <input type="text" name="faxnumber[]"
+                                        value="{{ old('faxnumber.0', $contacts[0]->faxnumber ?? '') }}"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        placeholder="Fax number">
+                                    @error('faxnumber.0')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div><label class="block text-gray-700 font-semibold text-xs mb-1">Website</label>
+                                    <input type="text" name="website[]"
+                                        value="{{ old('website.0', $contacts[0]->website ?? '') }}"
+                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        placeholder="Website URL">
+                                    @error('website.0')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
                                 <div><label class="block text-gray-700 font-semibold text-xs mb-1">Location</label>
                                     <input type="text" name="location[]"
                                         value="{{ old('location.0', $contacts[0]->loc ?? '') }}"
@@ -354,7 +322,8 @@
                             </div>
                             <div id="contacts-container">
                                 @for ($ci = 1; $ci < $count; $ci++)
-                                    <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-3 mt-2">
+                                    <div
+                                        class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_auto] gap-3 mt-2">
                                         <div><input type="text" name="contact_name[]"
                                                 value="{{ old('contact_name.' . $ci, $contacts[$ci]->name ?? '') }}"
                                                 class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
@@ -388,6 +357,22 @@
                                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                             @enderror
                                         </div>
+                                        <div><input type="text" name="faxnumber[]"
+                                                value="{{ old('faxnumber.' . $ci, $contacts[$ci]->faxnumber ?? '') }}"
+                                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                                placeholder="Fax number">
+                                            @error('faxnumber.' . $ci)
+                                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div><input type="text" name="website[]"
+                                                value="{{ old('website.' . $ci, $contacts[$ci]->website ?? '') }}"
+                                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                                placeholder="Website URL">
+                                            @error('website.' . $ci)
+                                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
                                         <div><input type="text" name="location[]"
                                                 value="{{ old('location.' . $ci, $contacts[$ci]->loc ?? '') }}"
                                                 class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
@@ -410,7 +395,7 @@
                                 class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
                                 Tally Details
                             </p>
-                            <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                            <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mb-2">
                                 <!-- Tally Serial — Disabled, hidden carries value -->
                                 <div>
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Serial No</label>
@@ -439,13 +424,12 @@
                                 <div>
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">Tally Expiry</label>
                                     <div class="relative">
-                                        <input type="text"
-                                            value="{{ old('tally_expiry', optional($distributor->tally_expiry)->format('d/m/Y')) }}"
+                                        <input type="text" value="{{ $distributor->tally_expiry }}"
                                             class="w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
                                             disabled>
                                         <div
                                             class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
-                                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                                            {{-- <i data-lucide="calendar" class="w-4 h-4"></i> --}}
                                         </div>
                                     </div>
                                     <input type="hidden" name="tally_expiry"
@@ -467,26 +451,12 @@
                                     <input type="hidden" name="tally_net_id"
                                         value="{{ old('tally_net_id', $distributor->tally_net_id) }}">
                                 </div>
-                                <div>
-                                    <label class="block text-gray-700 font-semibold text-xs mb-1">TCP Version</label>
-                                    <input type="text" value="{{ old('tcp_version', $distributor->tcp_version) }}"
-                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
-                                        disabled>
-                                    <input type="hidden" name="tcp_version"
-                                        value="{{ old('tcp_version', $distributor->tcp_version) }}">
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 font-semibold text-xs mb-1">TCP Source</label>
-                                    <input type="text" value="{{ old('tcp_source', $distributor->tcp_source) }}"
-                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
-                                        disabled>
-                                    <input type="hidden" name="tcp_source"
-                                        value="{{ old('tcp_source', $distributor->tcp_source) }}">
-                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
                                 <!-- Tally Users -->
                                 <div>
-                                    <label class="block text-gray-700 font-semibold text-xs mb-1">Tally No of Users
-                                        Editable</label>
+                                    <label class="block text-gray-700 font-semibold text-xs mb-1">Tally No of Users</label>
                                     <input type="text" name="tally_users"
                                         value="{{ old('tally_users', $distributor->tally_users) }}"
                                         class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
@@ -555,30 +525,14 @@
                                 class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
                                 Additional Details
                             </p>
-                            <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                            <div class="grid grid-cols-1 md:grid-cols-7 gap-3">
                                 <div>
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">Last Sync Date</label>
                                     <div class="relative">
                                         <input type="text" name="last_sync_date"
-                                            value="{{ old('last_sync_date', optional($distributor->last_sync_date)->format('d/m/Y')) }}"
-                                            class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
-                                        <div
-                                            class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
-                                            <i data-lucide="calendar" class="w-4 h-4"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 font-semibold text-xs mb-1">Date of Rollout Request
-                                        Receive</label>
-                                    <div class="relative">
-                                        <input type="text" name="rollout_request_date"
-                                            value="{{ old('rollout_request_date', optional($distributor->rollout_request_date)->format('d/m/Y')) }}"
-                                            class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
-                                        <div
-                                            class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
-                                            <i data-lucide="calendar" class="w-4 h-4"></i>
-                                        </div>
+                                            value="{{ $distributor->last_sync_date }}"
+                                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                            disabled>
                                     </div>
                                 </div>
                                 <div>
@@ -596,15 +550,27 @@
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 font-semibold text-xs mb-1">Date of Rollout
-                                        Done</label>
+                                        Request</label>
                                     <div class="relative">
-                                        <input type="text" name="rollout_done_date"
-                                            value="{{ old('rollout_done_date', optional($distributor->rollout_done_date)->format('d/m/Y')) }}"
+                                        <input type="text" name="rollout_request_date"
+                                            value="{{ old('rollout_request_date', optional($distributor->rollout_request_date)->format('d/m/Y')) }}"
                                             class="datepicker w-full pl-2 pr-8 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600">
                                         <div
                                             class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
                                             <i data-lucide="calendar" class="w-4 h-4"></i>
                                         </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-gray-700 font-semibold text-xs mb-1">Date of Rollout
+                                        Done</label>
+                                    <div class="relative">
+                                        <input type="text" name="rollout_done_date"
+                                            value="{{ $distributor->rollout_done_date }}"
+                                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                            disabled>
+
                                     </div>
                                 </div>
                                 <div>
@@ -632,23 +598,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Status -->
-                                <div>
-                                    <label class="block text-gray-700 font-semibold text-xs mb-1">
-                                        Status<span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="status" id="status" required
-                                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 select2-basic">
-                                        @foreach ($statusOptions as $option)
-                                            <option value="{{ $option }}"
-                                                {{ old('status', $distributor->status) === $option ? 'selected' : '' }}>
-                                                {{ $option }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('status')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
+
                             </div>
                         </div>
                         <!-- Sync Information -->

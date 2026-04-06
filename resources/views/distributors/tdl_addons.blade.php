@@ -26,6 +26,7 @@
                             <th>SN.</th>
                             <th>Filename</th>
                             <th>Format</th>
+                            <th>File Path</th>
                             <th>Version</th>
                             <th>Expiry</th>
                             <th>Type</th>
@@ -43,6 +44,9 @@
                                 <td class="{{ $addon->batch_id == $latestBatchId ? 'text-black' : 'text-gray-500' }}">
                                     {{ $addon->tcp_file_format }}</td>
                                 <td class="{{ $addon->batch_id == $latestBatchId ? 'text-black' : 'text-gray-500' }}">
+                                    <span title="{{ $addon->tcp_filepath }}">{{ \Illuminate\Support\Str::limit($addon->tcp_filepath, 200) }}</span>
+                                </td>
+                                <td class="{{ $addon->batch_id == $latestBatchId ? 'text-black' : 'text-gray-500' }}">
                                     {{ $addon->tcp_version }}</td>
                                 <td class="{{ $addon->batch_id == $latestBatchId ? 'text-black' : 'text-gray-500' }}">
                                     {{ $addon->tcp_expiry_date }}</td>
@@ -57,7 +61,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-3 text-center text-gray-400 italic">
+                                <td colspan="9" class="px-3 text-center text-gray-400 italic">
                                     No addons found for this distributor.
                                 </td>
                             </tr>

@@ -79,7 +79,6 @@ class AdditionalOpportunityController extends Controller
     {
         Gate::authorize('additional-opportunities.edit');
         $categories = Category::all();
-        // dd($additionalOpportunity, $categories);
         return view('additional-opportunity.edit', compact('additionalOpportunity', 'categories'));
     }
 

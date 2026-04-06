@@ -26,7 +26,7 @@ if (!function_exists('getUserLevel')) {
 if (!function_exists('logActivity')) {
     /**
      * Record user activity into a daily log entry with serialized details.
-     * 
+     *
      * @param string $detail Human readable description of the action.
      * @param string $action Action type e.g., UPDATE, CREATE, LOGIN.
      * @param string|null $model Model name being affected.
@@ -36,31 +36,57 @@ if (!function_exists('logActivity')) {
     function logActivity($detail, $action = '', $model = null, $modelId = null)
     {
         if (auth()->check()) {
-            $userId = auth()->id();
-            $date = date('Y-m-d');
-            
-            // Prepare the log entry metadata
-            $logEntry = [
-                'date'     => date('Y-m-d H:i:s'),
-                'user'     => auth()->user()->name . ' (' . auth()->user()->email . ')',
-                'role'     => isSuperAdmin() ? 'Super Admin' : getUserLevel(),
-                'action'   => $action,
-                'model'    => $model,
-                'model_id' => $modelId,
-                'detail'   => $detail,
-            ];
+            try {
+                $userId = auth()->id();
+                $date = date('Y-m-d');
+                $timestamp = date('Y-m-d H:i:s');
 
-            if ($action == 'LOGIN') {
-                UserLog::create([
-                    'user_id'       => $userId,
-                    'date'          => $date,
-                    'log_in'        => date('Y-m-d H:i:s'),
-                    'last_activity' => date('Y-m-d H:i:s'),
-                    'detail'        => serialize([$logEntry]),
-                ]);
-                return true;
-            } elseif ($action == 'LOGOUT') {
-                // Find the active log entry for today that hasn't been logged out yet
+                if (!$date || !$timestamp) {
+                    return false;
+                }
+
+                // Prepare the log entry metadata
+                $logEntry = [
+                    'date'     => $timestamp,
+                    'user'     => auth()->user()->name . ' (' . auth()->user()->email . ')',
+                    'role'     => isSuperAdmin() ? 'Super Admin' : getUserLevel(),
+                    'action'   => $action,
+                    'model'    => $model,
+                    'model_id' => $modelId,
+                    'detail'   => $detail,
+                ];
+
+                if ($action == 'LOGIN') {
+                    UserLog::create([
+                        'user_id'       => $userId,
+                        'date'          => $date,
+                        'log_in'        => $timestamp,
+                        'last_activity' => $timestamp,
+                        'detail'        => serialize([$logEntry]),
+                    ]);
+                    return true;
+                } elseif ($action == 'LOGOUT') {
+                    // Find the active log entry for today that hasn't been logged out yet
+                    $existingLog = UserLog::where('user_id', $userId)
+                        ->where('date', $date)
+                        ->whereNotNull('log_in')
+                        ->whereNull('log_out')
+                        ->orderBy('id', 'desc')
+                        ->first();
+
+                    if ($existingLog) {
+                        $detailsArray = unserialize($existingLog->detail) ?: [];
+                        $detailsArray[] = $logEntry;
+
+                        $existingLog->update([
+                            'log_out' => $timestamp,
+                            'detail'  => serialize($detailsArray)
+                        ]);
+                    }
+                    return true;
+                }
+
+                // Standard activities (Update, Create, Delete, etc.)
                 $existingLog = UserLog::where('user_id', $userId)
                     ->where('date', $date)
                     ->whereNotNull('log_in')
@@ -71,42 +97,26 @@ if (!function_exists('logActivity')) {
                 if ($existingLog) {
                     $detailsArray = unserialize($existingLog->detail) ?: [];
                     $detailsArray[] = $logEntry;
-                    
+
                     $existingLog->update([
-                        'log_out' => date('Y-m-d H:i:s'),
-                        'detail'  => serialize($detailsArray)
+                        'last_activity' => $timestamp,
+                        'detail'        => serialize($detailsArray),
                     ]);
+                    return $detailsArray;
+                } else {
+                    // If no active session found for today, create one (fallback case)
+                    $detailsArray = [$logEntry];
+                    UserLog::create([
+                        'user_id'       => $userId,
+                        'date'          => $date,
+                        'last_activity' => $timestamp,
+                        'detail'        => serialize($detailsArray),
+                    ]);
+                    return $detailsArray;
                 }
-                return true;
-            }
-
-            // Standard activities (Update, Create, Delete, etc.)
-            $existingLog = UserLog::where('user_id', $userId)
-                ->where('date', $date)
-                ->whereNotNull('log_in')
-                ->whereNull('log_out')
-                ->orderBy('id', 'desc')
-                ->first();
-
-            if ($existingLog) {
-                $detailsArray = unserialize($existingLog->detail) ?: [];
-                $detailsArray[] = $logEntry;
-
-                $existingLog->update([
-                    'last_activity' => date('Y-m-d H:i:s'),
-                    'detail'        => serialize($detailsArray),
-                ]);
-                return $detailsArray;
-            } else {
-                // If no active session found for today, create one (fallback case)
-                $detailsArray = [$logEntry];
-                UserLog::create([
-                    'user_id'       => $userId,
-                    'date'          => $date,
-                    'last_activity' => date('Y-m-d H:i:s'),
-                    'detail'        => serialize($detailsArray),
-                ]);
-                return $detailsArray;
+            } catch (\Exception $e) {
+                \Log::error('logActivity error: ' . $e->getMessage());
+                return false;
             }
         }
         return false;

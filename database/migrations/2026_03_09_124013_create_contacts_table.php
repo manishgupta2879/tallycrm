@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('parent_id')->index();
             $table->string('parent_type', 50)->index(); // e.g., 'distributor'
-            $table->string('name', 100);
+            $table->string('name', 100)->nullable();
             $table->string('desig', 50)->nullable();
             $table->string('email', 100)->nullable();
             $table->string('mobile', 15)->nullable();

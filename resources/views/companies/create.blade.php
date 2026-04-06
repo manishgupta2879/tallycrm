@@ -15,7 +15,6 @@
             <form action="{{ route('companies.store') }}" method="POST">
                 @csrf
                 <div class="overflow-x-auto px-4 relative" style="max-height: calc(100vh - 263px);">
-                    <!-- Row 1: Company Code, Name, Status (Sticky Header) -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 pt-2 sticky top-0 bg-white z-10 transition-shadow"
                         id="stickyHeader">
                         <!-- Company Code (PID) -->

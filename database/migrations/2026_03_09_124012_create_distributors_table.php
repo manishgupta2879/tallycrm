@@ -19,57 +19,54 @@ return new class extends Migration {
             $table->string('company_code', 32)->nullable()->index(); // Principal Company Code
             $table->text('address')->nullable();
 
-            // Geo details (Length max 20)
-            $table->string('country', 20)->nullable();
-            $table->string('region', 20)->nullable();
-            $table->string('state', 20)->nullable();
-            $table->string('city', 20)->nullable();
-            $table->string('pincode', 10)->nullable();
+            // Geo details (as string fields now)
+            $table->string('country', 100)->nullable();
+            $table->string('state', 100)->nullable();
 
             $table->string('gst_number', 15)->nullable();
-            $table->string('pan_number', 10)->nullable();
+            $table->string('pan_number', 15)->nullable();
+
             $table->string('tan_no', 50)->nullable();
             $table->string('msme_no', 50)->nullable();
 
 
             // Distributor Params (Max 10)
-            for ($i = 1; $i <= 10; $i++) {
-                $table->string('d_parameter_' . $i, 100)->nullable();
-            }
+            // for ($i = 1; $i <= 10; $i++) {
+            //     $table->string('d_parameter_' . $i, 100)->nullable();
+            // }
 
             // Tally details
-            $table->string('tally_serial')->nullable();
-            $table->string('tally_version')->nullable();
-            $table->string('tally_release')->nullable();
-            $table->string('tally_expiry')->nullable();
-            $table->string('tally_edition')->nullable();
-            $table->string('tally_net_id')->nullable();
-            $table->string('tcp_version')->nullable();
-            $table->string('tcp_source')->nullable();
-            $table->string('tally_users')->nullable();
-            $table->string('tally_deployed')->default('cloud'); // cloud or local
-            $table->string('no_of_computers')->nullable();
-            $table->string('existing_provider')->nullable();
-            $table->string('tally_data_volume')->nullable();
+            $table->string('tally_serial', 50)->nullable();
+            $table->string('tally_version',50)->nullable();
+            $table->string('tally_release',50)->nullable();
+            $table->string('tally_expiry',15)->nullable();
+            $table->string('tally_edition',50)->nullable();
+            $table->string('tally_net_id',50)->nullable();
+
+            $table->string('tally_users',50)->nullable();
+            $table->string('tally_deployed',6)->default('cloud'); // cloud or local
+            $table->string('no_of_computers',20)->nullable();
+            $table->string('existing_provider',100)->nullable();
+            $table->string('tally_data_volume',50)->nullable();
             $table->boolean('tally_cloud')->default(1);
 
             // Sync information
             $table->text('dist_perm_pass')->nullable();
-            $table->string('last_sync_date')->nullable();
-            $table->string('no_of_sync_urls')->nullable();
+            $table->string('last_sync_date',15)->nullable();
+            $table->string('no_of_sync_urls',5)->nullable();
             $table->json('c_urls')->nullable();
 
 
             // Rollout / Additional Details
-            $table->string('rollout_request_string')->nullable();
-            $table->string('tcp_generated_date')->nullable();
-            $table->string('rollout_done_date')->nullable();
-            $table->string('rollout_done_by')->nullable();
+            $table->string('rollout_request_date',15)->nullable();
+            $table->string('tcp_generated_date',15)->nullable();
+            $table->string('rollout_done_date',15)->nullable();
+            $table->string('rollout_done_by',100)->nullable();
             $table->text('rollout_remarks')->nullable();
-            $table->string('remarks_date')->nullable();
+            $table->string('remarks_date',15)->nullable();
 
-            $table->string('status')->default('Active')->index();
-            $table->json('params')->nullable(); // Dynamic parameters
+            $table->string('status',9)->default('Active')->index();
+            $table->json('params')->nullable();
             $table->timestamps();
         });
 

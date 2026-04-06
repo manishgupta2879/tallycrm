@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('tally_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('pid')->nullable();
-            $table->string('distributor_id')->nullable();
-            $table->string('tally_serial_no');
+            $table->string('tally_serial_no',50);
             $table->string('tally_version');
             $table->string('tally_release');
             $table->string('tally_edition');

@@ -13,9 +13,9 @@ class DefaultCompanySeeder extends Seeder
     public function run(): void
     {
         Company::updateOrCreate(
-            ['pid' => 'UNCATEGORIZED'],
+            ['pid' => 'MISC'],
             [
-                'name' => 'Uncategorized Principals',
+                'name' => 'MISCELLANEOUS CUSTOMERS',
                 'contact_name' => 'System Administrator',
                 'designation' => 'System',
                 'email' => 'admin@tallychamps.com',

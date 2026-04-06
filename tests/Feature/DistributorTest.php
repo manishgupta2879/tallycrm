@@ -35,25 +35,25 @@ class DistributorTest extends TestCase
     private function validData(array $overrides = []): array
     {
         return array_merge([
-            'code'         => 'DT-AAA01',
-            'name'         => 'Test Distributor',
+            'code' => 'DT-AAA01',
+            'name' => 'Test Distributor',
             'company_code' => 'CO-TEST01',
-            'type'         => 'Platinum',
-            'address'      => '123 Main St',
-            'country'      => '1',
-            'region'       => '1',
-            'state'        => '1',
-            'city'         => '1',
-            'pincode'      => '400001',
-            'gst_number'   => '27AAPFU0939F1ZV',
-            'pan_number'   => 'AAPFU0939F',
-            'status'       => 'Active',
+            'type' => 'Platinum',
+            'address' => '123 Main St',
+            'country' => '1',
+            'region' => '1',
+            'state' => '1',
+            'city' => '1',
+            'pincode' => '400001',
+            'gst_number' => '27AAPFU0939F1ZV',
+            'pan_number' => 'AAPFU0939F',
+            'status' => 'Active',
             // Contacts (array fields)
             'contact_name' => ['John Doe'],
-            'designation'  => ['Manager'],
-            'email'        => ['john@example.com'],
-            'mobile'       => ['9876543210'],
-            'location'     => ['Mumbai'],
+            'designation' => ['Manager'],
+            'email' => ['john@example.com'],
+            'mobile' => ['9876543210'],
+            'location' => ['Mumbai'],
         ], $overrides);
     }
 
@@ -67,8 +67,8 @@ class DistributorTest extends TestCase
     public function test_super_admin_can_view_distributors(): void
     {
         $this->actingAs($this->superAdmin())
-             ->get(route('distributors.index'))
-             ->assertOk();
+            ->get(route('distributors.index'))
+            ->assertOk();
     }
 
     // ─── 2. CREATE ────────────────────────────────────────────────────────
@@ -76,8 +76,8 @@ class DistributorTest extends TestCase
     public function test_super_admin_can_open_create_form(): void
     {
         $this->actingAs($this->superAdmin())
-             ->get(route('distributors.create'))
-             ->assertOk();
+            ->get(route('distributors.create'))
+            ->assertOk();
     }
 
     public function test_super_admin_can_create_distributor(): void
@@ -104,8 +104,8 @@ class DistributorTest extends TestCase
     public function test_create_distributor_requires_mandatory_fields(): void
     {
         $this->actingAs($this->superAdmin())
-             ->post(route('distributors.store'), [])
-             ->assertSessionHasErrors(['code', 'name', 'status']);
+            ->post(route('distributors.store'), [])
+            ->assertSessionHasErrors(['code', 'name', 'status']);
     }
 
     public function test_distributor_code_must_be_unique(): void
@@ -113,22 +113,22 @@ class DistributorTest extends TestCase
         Distributor::factory()->create(['code' => 'DT-SAME']);
 
         $this->actingAs($this->superAdmin())
-             ->post(route('distributors.store'), $this->validData(['code' => 'DT-SAME']))
-             ->assertSessionHasErrors('code');
+            ->post(route('distributors.store'), $this->validData(['code' => 'DT-SAME']))
+            ->assertSessionHasErrors('code');
     }
 
     public function test_gst_number_must_be_valid_format(): void
     {
         $this->actingAs($this->superAdmin())
-             ->post(route('distributors.store'), $this->validData(['gst_number' => 'INVALID-GST']))
-             ->assertSessionHasErrors('gst_number');
+            ->post(route('distributors.store'), $this->validData(['gst_number' => 'INVALID-GST']))
+            ->assertSessionHasErrors('gst_number');
     }
 
     public function test_pan_number_must_be_valid_format(): void
     {
         $this->actingAs($this->superAdmin())
-             ->post(route('distributors.store'), $this->validData(['pan_number' => 'INVALIDPAN']))
-             ->assertSessionHasErrors('pan_number');
+            ->post(route('distributors.store'), $this->validData(['pan_number' => 'INVALIDPAN']))
+            ->assertSessionHasErrors('pan_number');
     }
 
     // ─── 3. EDIT ──────────────────────────────────────────────────────────
@@ -138,15 +138,15 @@ class DistributorTest extends TestCase
         $distributor = Distributor::factory()->create();
 
         $this->actingAs($this->superAdmin())
-             ->get(route('distributors.edit', $distributor))
-             ->assertOk();
+            ->get(route('distributors.edit', $distributor))
+            ->assertOk();
     }
 
     // ─── 4. UPDATE ────────────────────────────────────────────────────────
 
     public function test_super_admin_can_update_distributor(): void
     {
-        $admin       = $this->superAdmin();
+        $admin = $this->superAdmin();
         $distributor = Distributor::factory()->create(['code' => 'DT-OLD01']);
 
         $response = $this->actingAs($admin)->put(
@@ -162,12 +162,12 @@ class DistributorTest extends TestCase
 
     public function test_super_admin_can_delete_distributor(): void
     {
-        $admin       = $this->superAdmin();
+        $admin = $this->superAdmin();
         $distributor = Distributor::factory()->create();
 
         $this->actingAs($admin)
-             ->delete(route('distributors.destroy', $distributor))
-             ->assertRedirect(route('distributors.index'));
+            ->delete(route('distributors.destroy', $distributor))
+            ->assertRedirect(route('distributors.index'));
 
         $this->assertDatabaseMissing('distributors', ['id' => $distributor->id]);
     }
@@ -177,15 +177,15 @@ class DistributorTest extends TestCase
     public function test_regular_user_cannot_access_create_form(): void
     {
         $this->actingAs($this->regularUser())
-             ->get(route('distributors.create'))
-             ->assertForbidden();
+            ->get(route('distributors.create'))
+            ->assertForbidden();
     }
 
     public function test_regular_user_cannot_create_distributor(): void
     {
         $this->actingAs($this->regularUser())
-             ->post(route('distributors.store'), $this->validData())
-             ->assertForbidden();
+            ->post(route('distributors.store'), $this->validData())
+            ->assertForbidden();
 
         $this->assertDatabaseMissing('distributors', ['code' => 'DT-AAA01']);
     }
@@ -195,8 +195,8 @@ class DistributorTest extends TestCase
         $distributor = Distributor::factory()->create();
 
         $this->actingAs($this->regularUser())
-             ->delete(route('distributors.destroy', $distributor))
-             ->assertForbidden();
+            ->delete(route('distributors.destroy', $distributor))
+            ->assertForbidden();
 
         $this->assertDatabaseHas('distributors', ['id' => $distributor->id]);
     }

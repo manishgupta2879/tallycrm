@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 class CompanyFeature extends Model
 {
     protected $fillable = [
         'tally_serial_no',
         'dist_name',
-        'state_name',
-        'country_name',
-        'mobile_numbers',
         'corporate_identity_no',
         'income_tax_number',
         'is_tcs_on',
@@ -56,5 +55,57 @@ class CompanyFeature extends Model
         'is_payment_request_on',
         'is_multi_address_on',
         'is_job_work_on',
+        'nooftallyplugins',
+        'tallyplugins',
     ];
+
+    protected $casts = [
+        'tallyplugins' => 'array',
+    ];
+
+    /**
+     * Accessors and Mutators for formatted dates
+     */
+    protected function eInvoiceApplicableDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn($v) => $this->formatDate($v),
+            set: fn($v) => $this->formatDateSet($v)
+        );
+    }
+
+    protected function eWayBillApplicableDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn($v) => $this->formatDate($v),
+            set: fn($v) => $this->formatDateSet($v)
+        );
+    }
+
+    private function formatDate($value)
+    {
+        if (!$value) return $value;
+        try {
+            if (preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $value)) return $value;
+            return \Carbon\Carbon::parse($value)->format('d/m/Y');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    private function formatDateSet($value)
+    {
+        if (empty($value)) return null;
+        try {
+            return \Carbon\Carbon::parse($value)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function setMsmeEnterpriseTypeAttribute($value)
+    {
+        $this->attributes['msme_enterprise_type'] =
+            trim(preg_replace('/[\x00-\x1F\x7F]/u', '', $value));
+    }
 }

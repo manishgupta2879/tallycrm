@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('tdl_addons', function (Blueprint $table) {
             $table->id();
-            $table->string('tally_serial_no');
+            $table->string('tally_serial_no',50);
             $table->string('tcp_filename');
+            $table->string('tcp_filepath');
             $table->string('tcp_file_format')->nullable();
             $table->string('tcp_version')->nullable();
             $table->string('tcp_expiry_date')->nullable();

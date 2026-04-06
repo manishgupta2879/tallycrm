@@ -9,6 +9,7 @@ use App\Models\Contact;
 use App\Models\TallyLog;
 use App\Models\TdlAddon;
 use App\Models\CompanyFeature;
+use App\Models\DistributorParameter;
 use App\Http\Requests\StoreDistributorRequest;
 use App\Http\Requests\UpdateDistributorRequest;
 use App\Services\DistributorService; // Added
@@ -65,8 +66,7 @@ class DistributorController extends Controller
         try {
             $this->distributorService->createDistributor($request->validated());
             return redirect()->route('distributors.index')->with('success', 'Distributor created successfully.');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
@@ -97,8 +97,7 @@ class DistributorController extends Controller
         try {
             $this->distributorService->updateDistributor($distributor, $request->validated());
             return redirect()->route('distributors.index')->with('success', 'Distributor updated successfully.');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
@@ -115,8 +114,7 @@ class DistributorController extends Controller
         try {
             $this->distributorService->deleteDistributor($distributor);
             return redirect()->route('distributors.index')->with('success', 'Distributor deleted successfully.');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
@@ -153,37 +151,89 @@ class DistributorController extends Controller
     public function tallyDetails(Distributor $distributor)
     {
         Gate::authorize('distributor.view');
-        
+
         $logs = TallyLog::where('tally_serial_no', '=', $distributor->tally_serial, 'and')
             ->orderBy('created_at', 'desc')
             ->paginate(15);
-            
+
         return view('distributors.tally_details', compact('distributor', 'logs'));
     }
 
     public function tdlAddons(Distributor $distributor)
     {
         Gate::authorize('distributor.view');
-        
+
         $addons = TdlAddon::where('tally_serial_no', $distributor->tally_serial)
             ->orderBy('batch_id', 'desc')
             ->orderBy('tcp_filename', 'asc')
             ->paginate(20);
 
         $latestBatchId = TdlAddon::where('tally_serial_no', $distributor->tally_serial)->max('batch_id');
-            
+
         return view('distributors.tdl_addons', compact('distributor', 'addons', 'latestBatchId'));
     }
 
     public function companyFeatures(Distributor $distributor)
     {
         Gate::authorize('distributor.view');
-        
+
         $features = CompanyFeature::where('tally_serial_no', $distributor->tally_serial)
             ->where('dist_name', $distributor->name)
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         return view('distributors.company_features', compact('distributor', 'features'));
+    }
+
+    /**
+     * Display the additional parameters for a distributor.
+     */
+    public function showParameters(Distributor $distributor)
+    {
+        Gate::authorize('distributor.view');
+        $parameters = DistributorParameter::where('tallyserialno', $distributor->tally_serial)
+            ->where('principalid', $distributor->company_code)
+            ->where('distributorid', $distributor->code)
+            ->where('distname', $distributor->name)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $parameterNames = $distributor?->company?->d_parameter ?? [];
+        return view('distributors.parameters', compact('distributor', 'parameters', 'parameterNames'));
+    }
+
+    /**
+     * Show the form for editing a parameter.
+     */
+    public function editParameter(Distributor $distributor, DistributorParameter $parameter)
+    {
+        Gate::authorize('distributor.update');
+
+        return view('distributors.parameters-edit', compact('distributor', 'parameter'));
+    }
+
+    /**
+     * Update a specific parameter record.
+     */
+    public function updateParameter(Request $request, Distributor $distributor, DistributorParameter $parameter)
+    {
+        Gate::authorize('distributor.update');
+
+        $validated = $request->validate([
+            'p1' => 'nullable|string',
+            'p2' => 'nullable|string',
+            'p3' => 'nullable|string',
+            'p4' => 'nullable|string',
+            'p5' => 'nullable|string',
+            'p6' => 'nullable|string',
+            'p7' => 'nullable|string',
+            'p8' => 'nullable|string',
+            'p9' => 'nullable|string',
+            'p10' => 'nullable|string',
+        ]);
+
+        $parameter->update($validated);
+
+        return redirect()->route('distributors.parameters', $distributor->id)
+            ->with('success', 'Parameter updated successfully!');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration 
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ return new class extends Migration
     {
         Schema::create('company_features', function (Blueprint $table) {
             $table->id();
-            $table->string('tally_serial_no', 100)->index();
+            $table->string('tally_serial_no', 50)->index();
             $table->string('dist_name')->index();
-            $table->string('state_name', 25)->nullable();
-            $table->string('country_name', 25)->nullable();
-            $table->string('mobile_numbers', 100)->nullable();
             $table->string('corporate_identity_no', 50)->nullable();
             $table->string('income_tax_number', 50)->nullable();
             $table->string('is_tcs_on', 5)->nullable();

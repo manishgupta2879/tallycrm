@@ -1,7 +1,7 @@
 @extends('layouts.app', ['breadcrumb' => 'Tally Log', 'breadcrumbRight' => 'Dashboard->Other Admin->Tally Log'])
 
 @section('content')
-    <div class="p-4 max-w-full">
+    <div class="max-w-full">
         <!-- Card Container -->
         <div class="bg-white rounded shadow-sm border border-gray-200">
             <div class="flex items-center justify-between py-2 px-3 border-b border-gray-200">
@@ -35,7 +35,7 @@
                             <th>EDITION</th>
                             <th>ACCOUNT ID</th>
                             <th>TSS EXPIRY</th>
-                            <th>GENERATED AT</th>
+                            <th>CREATED AT</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">

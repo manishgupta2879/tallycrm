@@ -23,7 +23,7 @@
                             <div class="flex items-center text-sm text-gray-600">
                                 <i data-lucide="calendar" class="h-4 w-4 mr-2 text-blue-500"></i>
                                 <span class="font-medium mr-1">Joined:</span>
-                                {{ Auth::user()->created_at->format('M d, Y') }}
+                                {{ Auth::user()->created_at->format('d/m/Y') }}
                             </div>
                         </div>
                     </div>

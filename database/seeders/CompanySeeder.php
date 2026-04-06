@@ -59,8 +59,8 @@ class CompanySeeder extends Seeder
                 "url_parameters" => ["URL", "User Name"]
             ],
             [
-                "company_pid" => "UNCATEGORIZED",
-                "company_name" => "Uncategorized Principals",
+                "company_pid" => "MISC",
+                "company_name" => "MISCELLANEOUS CUSTOMERS",
                 "distributor_type" => ["GENERAL"],
                 "distributor_parameters" => ["Remarks"],
                 "url_parameters" => []

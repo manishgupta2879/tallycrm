@@ -39,10 +39,8 @@
                             <th>Name</th>
                             <th>Type</th>
                             <th>Principal Company</th>
-                            <th>Region</th>
+                            <th>Country</th>
                             <th>State</th>
-                            <th>City</th>
-                            <th>Created At</th>
                             <th>Last Sync</th>
                             <th>Status</th>
                             <th>ACTION</th>
@@ -56,10 +54,8 @@
                                 <td>{{ $distributor->name }}</td>
                                 <td>{{ $distributor->type }}</td>
                                 <td>{{ $distributor->company->name ?? $distributor->company_code }}</td>
-                                <td>{{ $distributor->geoRegion->name ?? $distributor->region }}</td>
-                                <td>{{ $distributor->geoState->name ?? $distributor->state }}</td>
-                                <td>{{ $distributor->geoCity->name ?? $distributor->city }}</td>
-                                <td>{{ $distributor->created_at->format('d/m/Y') }}</td>
+                                <td>{{ $distributor->country }}</td>
+                                <td>{{ $distributor->state }}</td>
                                 <td>{{ $distributor->last_sync_date}}
                                 </td>
                                 <td>{{ $distributor->status }}</td>
@@ -70,7 +66,7 @@
                                                 title="Tally Details">
                                                 <i data-lucide="clipboard-list" class="text-blue-600 h-5 w-5"></i>
                                             </a> --}}
-                                            <a href="{{ route('distributors.tdl-addons', $distributor->id) }}"
+                                            {{-- <a href="{{ route('distributors.tdl-addons', $distributor->id) }}"
                                                 title="TDL Addons">
                                                 <i data-lucide="puzzle" class="text-orange-600 h-5 w-5"></i>
                                             </a>
@@ -78,6 +74,10 @@
                                                 title="Company Features">
                                                 <i data-lucide="settings-2" class="text-green-600 h-5 w-5"></i>
                                             </a>
+                                            <a href="{{ route('distributors.parameters', $distributor->id) }}"
+                                                title="Additional Parameters">
+                                                <i data-lucide="table" class="text-blue-500 h-5 w-5"></i>
+                                            </a> --}}
                                         @endcan
                                         @can('distributor.edit')
                                             <a href="{{ route('distributors.edit', $distributor->id) }}" title="Edit">
