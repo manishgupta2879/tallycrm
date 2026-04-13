@@ -579,38 +579,40 @@
                             </div>
                         </div>
 
-                        <!-- Sync Information Moved to End -->
                         <div class="mb-3">
                             <p
                                 class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
                                 Sync Information</p>
-                            <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-                                <div class="col-span-3">
-                                    <label class="block text-gray-700 font-semibold text-xs mb-1">Sync URLs</label>
-                                    <div id="sync-urls-container" class="space-y-1">
-                                        @php
-                                            $oldSyncUrls = old('sync_urls', ['']);
-                                        @endphp
-                                        @foreach ($oldSyncUrls as $index => $url)
-                                            <div class="flex items-center space-x-1 sync-url-row">
-                                                <input type="text" name="sync_urls[]" value="{{ $url }}"
-                                                    class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                                    placeholder="https://example.com/api">
-                                                @if ($loop->first)
-                                                    <button type="button" class="btn-primary px-2 py-1 rounded"
-                                                        onclick="addSyncUrl()">
-                                                        <i data-lucide="plus" class="h-3.5 w-3.5"></i>
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="btn-danger px-2 py-1 rounded"
-                                                        onclick="removeSyncUrl(this)">
-                                                        <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        @endforeach
+                            <div class="mb-2">
+                                <label class="block text-gray-700 font-semibold text-xs mb-1">No of Sync URLs</label>
+                                <select id="no_of_sync_urls_dropdown" name="no_of_sync_urls"
+                                    class="w-1/4 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    onchange="generateSyncUrlInputs()">
+                                    <option value="0">-- Select Count --</option>
+                                    @for ($i = 1; $i <= 10; $i++)
+                                        <option value="{{ $i }}" {{ old('no_of_sync_urls') == $i ? 'selected' : '' }}>
+                                            {{ $i }}</option>
+                                    @endfor
+                                </select>
+                                @error('no_of_sync_urls')
+                                    <p class="text-red-500 text-[10px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div id="sync-urls-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                @php
+                                    $oldUrls = old('sync_urls', []);
+                                @endphp
+                                @foreach($oldUrls as $idx => $url)
+                                    <div class="p-2 border border-gray-200 rounded bg-gray-50 sync-url-block relative">
+                                        <label class="block text-gray-700 font-semibold text-[10px] mb-1">Sync URL {{ $idx + 1 }}</label>
+                                        <input type="text" name="sync_urls[]" value="{{ $url }}"
+                                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                            placeholder="https://example.com/api">
+                                        @error('sync_urls.'.$idx)
+                                            <p class="text-red-500 text-[10px] mt-0.5">{{ $message }}</p>
+                                        @enderror
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -832,25 +834,33 @@
 
         // ─── Sync URL Rows ────────────────────────────────────────────────────────
 
-        function addSyncUrl() {
+        function generateSyncUrlInputs() {
+            const count = parseInt(document.getElementById('no_of_sync_urls_dropdown').value);
             const container = document.getElementById('sync-urls-container');
-            const div = document.createElement('div');
-            div.className = "flex items-center space-x-1 sync-url-row";
-            div.innerHTML = `
-                                        <input type="text" name="sync_urls[]"
-                                            class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                            placeholder="https://example.com/api">
-                                        <button type="button" class="btn-danger px-2 py-1 rounded"
-                                            onclick="removeSyncUrl(this)">
-                                            <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
-                                        </button>
-                                    `;
-            container.appendChild(div);
-            lucide.createIcons();
-        }
+            const currentBlocks = container.querySelectorAll('.sync-url-block');
+            const currentCount = currentBlocks.length;
 
-        function removeSyncUrl(button) {
-            button.closest('.sync-url-row').remove();
+            if (count < currentCount) {
+                if (!confirm(`Are you sure you want to remove ${currentCount - count} Sync URL(s)?`)) {
+                    document.getElementById('no_of_sync_urls_dropdown').value = currentCount;
+                    return;
+                }
+                for (let i = currentCount - 1; i >= count; i--) {
+                    currentBlocks[i].remove();
+                }
+            } else if (count > currentCount) {
+                for (let i = currentCount; i < count; i++) {
+                    const div = document.createElement('div');
+                    div.className = "p-2 border border-gray-200 rounded bg-gray-50 sync-url-block relative";
+                    div.innerHTML = `
+                        <label class="block text-gray-700 font-semibold text-[10px] mb-1">Sync URL ${i + 1}</label>
+                        <input type="text" name="sync_urls[]"
+                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                            placeholder="https://example.com/api">
+                    `;
+                    container.appendChild(div);
+                }
+            }
         }
     </script>
 @endsection

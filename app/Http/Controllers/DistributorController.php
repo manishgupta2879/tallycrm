@@ -5,18 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Distributor;
 use App\Models\Company;
 use App\Models\Geo;
-use App\Models\Contact;
 use App\Models\TallyLog;
 use App\Models\TdlAddon;
 use App\Models\CompanyFeature;
 use App\Models\DistributorParameter;
 use App\Http\Requests\StoreDistributorRequest;
 use App\Http\Requests\UpdateDistributorRequest;
+use App\Http\Requests\ValidateDecryptPasswordRequest;
 use App\Services\DistributorService; // Added
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+
+use Illuminate\Support\Facades\Crypt;
 
 class DistributorController extends Controller
 {
@@ -35,14 +35,116 @@ class DistributorController extends Controller
         Gate::authorize('distributor.view');
 
         $search = $request->input('search');
+        $companyFilter = $request->input('company');
+        $sortBy = $request->input('sort', 'name'); // Add sorting parameter
 
-        $distributors = Distributor::with(['contacts', 'company', 'geoRegion', 'geoState', 'geoCity'])
-            ->search($search)
+        $query = Distributor::with(['company'])
+            ->search($search);
+
+        // Filter by company if provided
+        $selectedCompany = null;
+        if ($companyFilter) {
+            $query->where('company_code', $companyFilter);
+            $selectedCompany = Company::where('pid', $companyFilter)->first();
+        }
+
+        // Initialize variables for grouping/highlighting
+        $highlightedSerials = [];
+        $groupedMiscCounts = [];
+        $excludeIds = [];
+
+        // Apply grouping and highlighting ONLY if no company filter is applied
+        if (!$companyFilter) {
+            // Get duplicate serials at database level (more efficient for large datasets)
+            $duplicateSerials = Distributor::select('tally_serial')
+                ->whereNotNull('tally_serial')
+                ->groupBy('tally_serial')
+                ->havingRaw('COUNT(*) > 1')
+                ->pluck('tally_serial')
+                ->toArray();
+
+            if (!empty($duplicateSerials)) {
+                $highlightedSerials = $duplicateSerials;
+
+                // Process MISC grouping logic efficiently
+                foreach ($duplicateSerials as $serial) {
+                    $serialDistributors = Distributor::where('tally_serial', $serial)
+                        ->select('id', 'company_code')
+                        ->get();
+
+                    $miscDistributors = $serialDistributors->where('company_code', 'MISC');
+                    $otherDistributors = $serialDistributors->where('company_code', '!=', 'MISC');
+
+                    // If both MISC and other companies exist, exclude MISC from list
+                    if ($miscDistributors->count() > 0 && $otherDistributors->count() > 0) {
+                        $excludeIds = array_merge($excludeIds, $miscDistributors->pluck('id')->toArray());
+                    }
+                    // If only MISC exists and multiple MISC distributors, keep only first one
+                    elseif ($miscDistributors->count() > 1 && $otherDistributors->count() == 0) {
+                        $miscIds = $miscDistributors->pluck('id')->toArray();
+                        $firstMiscId = array_shift($miscIds);
+                        $excludeIds = array_merge($excludeIds, $miscIds);
+                        $groupedMiscCounts[$firstMiscId] = $miscDistributors->count();
+                    }
+                }
+
+                // Apply exclusions at database level
+                if (!empty($excludeIds)) {
+                    $query->whereNotIn('id', $excludeIds);
+                }
+            }
+        }
+
+        // Apply ordering - support sorting by serial, name, code, etc.
+        switch ($sortBy) {
+            case 'serial':
+                $query->orderBy('tally_serial', 'asc')->orderBy('name', 'asc');
+                break;
+            case 'serial_desc':
+                $query->orderBy('tally_serial', 'desc')->orderBy('name', 'asc');
+                break;
+            case 'code':
+                $query->orderBy('code', 'asc');
+                break;
+            case 'company':
+                $query->orderBy('company_code', 'asc')->orderBy('name', 'asc');
+                break;
+            default: // name
+                $query->orderBy('name', 'asc');
+                break;
+        }
+
+        // Use database-level pagination (efficient for large datasets)
+        $perPage = 25;
+        $distributors = $query->paginate($perPage)->withQueryString();
+
+        return view('distributors.index', compact('distributors', 'selectedCompany', 'highlightedSerials', 'groupedMiscCounts', 'sortBy'));
+    }
+
+    /**
+     * Show all distributors for a specific tally serial number.
+     */
+    public function showBySerial(Request $request)
+    {
+        Gate::authorize('distributor.view');
+
+        $serial = $request->input('serial');
+
+        if (!$serial) {
+            return redirect()->route('distributors.index')->with('error', 'Serial number is required.');
+        }
+
+        $distributors = Distributor::with(['contacts', 'company'])
+            ->where('tally_serial', $serial)
+            ->orderBy('company_code')
             ->orderBy('name')
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
-        return view('distributors.index', compact('distributors'));
+        if ($distributors->isEmpty()) {
+            return redirect()->route('distributors.index')->with('error', 'No distributors found for this serial number.');
+        }
+
+        return view('distributors.show-by-serial', compact('distributors', 'serial'));
     }
 
     /**
@@ -154,7 +256,7 @@ class DistributorController extends Controller
 
         $logs = TallyLog::where('tally_serial_no', '=', $distributor->tally_serial, 'and')
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(25);
 
         return view('distributors.tally_details', compact('distributor', 'logs'));
     }
@@ -166,7 +268,7 @@ class DistributorController extends Controller
         $addons = TdlAddon::where('tally_serial_no', $distributor->tally_serial)
             ->orderBy('batch_id', 'desc')
             ->orderBy('tcp_filename', 'asc')
-            ->paginate(20);
+            ->paginate(25);
 
         $latestBatchId = TdlAddon::where('tally_serial_no', $distributor->tally_serial)->max('batch_id');
 
@@ -235,5 +337,45 @@ class DistributorController extends Controller
 
         return redirect()->route('distributors.parameters', $distributor->id)
             ->with('success', 'Parameter updated successfully!');
+    }
+
+
+    public function validateDecryptPassword(ValidateDecryptPasswordRequest $request, Distributor $distributor)
+    {
+        Gate::authorize('distributor.view');
+
+        if (!$request->validatePassword()) {
+            return response()->json(['success' => false, 'message' => 'Invalid password.'], 403);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Password validated successfully.']);
+    }
+
+    /**
+     * Decrypt and return the URLs for distributor.
+     * This should only be called after password validation.
+     */
+    public function decryptUrls(Distributor $distributor)
+    {
+        Gate::authorize('distributor.view');
+
+        try {
+            $urls = $distributor->c_urls;
+
+            // Handle legacy double-encrypted data if still present
+            if (is_string($urls)) {
+                $urls = json_decode(Crypt::decryptString($urls), true);
+            }
+
+            // Ensure we return an array/object, not null
+            if (empty($urls)) {
+                return response()->json(['success' => true, 'urls' => []]);
+            }
+
+            return response()->json(['success' => true, 'urls' => $urls]);
+        } catch (\Exception $e) {
+            \Log::error('URL Decryption Error for Distributor ' . $distributor->id . ': ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to decrypt URLs. Please try again later.'], 400);
+        }
     }
 }

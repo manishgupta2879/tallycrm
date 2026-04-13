@@ -28,7 +28,7 @@ class TallyLogController extends Controller
             ], 'like', "%{$search}%");
         }
 
-        $tallyLogs = $query->orderBy('created_at', 'desc')->paginate(20);
+        $tallyLogs = $query->orderBy('created_at', 'desc')->paginate(25);
 
         return view('tally-logs.index', compact('tallyLogs'));
     }

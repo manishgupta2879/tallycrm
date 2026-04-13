@@ -26,9 +26,9 @@ class StoreDistributorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|string|max:32|unique:distributors,code',
+            'code' => 'required|string|max:50|unique:distributors,code',
             'name' => 'required|string|max:255',
-            'company_code' => 'required|string|max:32',
+            'company_code' => 'required|string|max:50',
             'type' => 'required|string|max:32',
             'address' => 'nullable|string',
             'country' => 'nullable|string|max:20',

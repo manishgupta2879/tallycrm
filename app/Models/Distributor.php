@@ -18,11 +18,19 @@ class Distributor extends Model
         'name',
         'type',
         'company_code',
-        'city',
-        'state',
         'company.name',
         'contacts.name',
-        'contacts.mobile'
+        'contacts.mobile',
+        'address',
+        'state',
+        'gst_number',
+        'pan_number',
+        'tally_serial',
+        'tally_version',
+        'tally_release',
+        'tally_expiry',
+        'tally_edition',
+        'tally_net_id',
     ];
 
     protected $fillable = [

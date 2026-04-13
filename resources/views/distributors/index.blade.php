@@ -13,19 +13,33 @@
                             <span>Add Distributor</span>
                         </a>
                     @endcan
+                    @if ($selectedCompany)
+                        <div class="text-xs text-gray-600 font-semibold border-l border-gray-300 pl-2">
+                            Distributors of: <span class="text-blue-600">{{ $selectedCompany->name }}</span>
+                        </div>
+                    @endif
                 </div>
-                {{-- ... (search form) ... --}}
+
                 <div class="flex items-center space-x-1">
                     <form method="GET" action="{{ route('distributors.index') }}" class="flex items-center space-x-1">
                         <div class="flex">
                             <input type="text" name="search" placeholder="Search..." value="{{ request('search', '') }}"
                                 class="px-2 py-1.5 border border-gray-300 rounded-l-md text-xs focus:outline-none focus:ring-1 focus:ring-gray-600" />
+                            @if ($selectedCompany)
+                                <input type="hidden" name="company" value="{{ $selectedCompany->pid }}" />
+                            @endif
                             <button type="submit"
                                 class="bg-gray-200 hover:bg-gray-400 text-dark text-xs py-1.5 px-2.5 rounded-r-md transition border-t border-r border-b border-gray-300">
                                 <i data-lucide="search" class="w-4 h-4"></i>
                             </button>
                         </div>
                     </form>
+                    @if ($selectedCompany)
+                        <a href="{{ route('companies.index') }}" class="btn-secondary" title="Back to companies list">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            <span>Back to Companies</span>
+                        </a>
+                    @endif
                 </div>
             </div>
 
@@ -37,12 +51,14 @@
                             <th>SN.</th>
                             <th>Dist. Code</th>
                             <th>Name</th>
-                            <th>Type</th>
                             <th>Principal Company</th>
-                            <th>Country</th>
                             <th>State</th>
-                            <th>Last Sync</th>
-                            <th>Status</th>
+                            <th>Serial No</th>
+                            <th>Version</th>
+                            <th>Release</th>
+                            <th>Expiry</th>
+                            <th>Edition</th>
+                            <th>Net Id</th>
                             <th>ACTION</th>
                         </tr>
                     </thead>
@@ -52,13 +68,24 @@
                                 <td>{{ $distributors->firstItem() + $sn }}</td>
                                 <td>{{ $distributor->code }}</td>
                                 <td>{{ $distributor->name }}</td>
-                                <td>{{ $distributor->type }}</td>
                                 <td>{{ $distributor->company->name ?? $distributor->company_code }}</td>
-                                <td>{{ $distributor->country }}</td>
                                 <td>{{ $distributor->state }}</td>
-                                <td>{{ $distributor->last_sync_date}}
+                                <td>
+                                    @if (in_array($distributor->tally_serial, $highlightedSerials ?? []))
+                                        <a href="{{ route('distributors.showBySerial', ['serial' => $distributor->tally_serial]) }}"
+                                            class="py-1 text-blue-900 rounded transition font-semibold cursor-pointer"
+                                            title="Click to view all distributors for this serial">
+                                            {{ $distributor->tally_serial }}
+                                        </a>
+                                    @else
+                                        {{ $distributor->tally_serial }}
+                                    @endif
                                 </td>
-                                <td>{{ $distributor->status }}</td>
+                                <td>{{ $distributor->tally_version }}</td>
+                                <td>{{ $distributor->tally_release }}</td>
+                                <td>{{ $distributor->tally_expiry }}</td>
+                                <td>{{ $distributor->tally_edition }}</td>
+                                <td>{{ $distributor->tally_net_id }}</td>
                                 <td>
                                     <div class="flex justify-center space-x-1">
                                         @can('distributor.view')

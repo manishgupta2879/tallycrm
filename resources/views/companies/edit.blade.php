@@ -1,6 +1,9 @@
 @extends('layouts.app', ['breadcrumb' => 'Edit Company', 'breadcrumbRight' => 'Dashboard->Primary Setup->Company->Edit'])
 
 @section('content')
+    <!-- Include Unified Password Modal Component -->
+    @include('components.password-decrypt-modal')
+
     <div class="max-w-full">
         <div class="bg-white rounded shadow-sm border border-gray-200">
             <div class="flex items-center justify-between py-2 px-3 border-b border-gray-200">
@@ -208,8 +211,8 @@
                         <div class="flex items-center justify-between text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
                             <p>URL Configuration</p>
                             @if(empty(old('c_urls')) && !empty($company->getRawOriginal('c_urls')))
-                                <button type="button" id="decrypt-urls-btn" class="btn-primary py-0.5 px-2 text-[10px] flex items-center gap-1" onclick="decryptCompanyUrls({{ $company->id }})">
-                                    <i data-lucide="eye" class="h-3 w-3"></i> Decrypt / View URLs
+                                <button type="button" id="decrypt-urls-btn" class="btn-sm btn-primary py-0 px-2 text-[10px] flex items-center gap-1" onclick="decryptCompanyUrls({{ $company->id }})">
+                                    <i data-lucide="eye" class="h-3 w-3"></i> View
                                 </button>
                             @endif
                         </div>
@@ -455,7 +458,7 @@
         function addField(urlIndex) {
             const container = document.getElementById(`fields-container-${urlIndex}`);
             const fieldRows = container.querySelectorAll('.field-row');
-            
+
             let maxFieldIndex = -1;
             fieldRows.forEach(row => {
                 const inputs = row.querySelectorAll('input');
@@ -467,7 +470,7 @@
                     }
                 });
             });
-            
+
             const nextFieldIndex = maxFieldIndex + 1;
 
             if (fieldRows.length >= 12) {
@@ -490,6 +493,11 @@
         }
 
         function decryptCompanyUrls(companyId) {
+            // Show password modal with company decrypt callback
+            showPasswordModal('company', companyId, decryptUrlsAfterValidation);
+        }
+
+        function decryptUrlsAfterValidation(companyId) {
             const btn = document.getElementById('decrypt-urls-btn');
             btn.innerHTML = `
                 <svg class="animate-spin h-3 w-3 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -498,14 +506,14 @@
                 </svg> Decrypting...`;
             btn.disabled = true;
 
-            fetch(`/companies/${companyId}/decrypt-urls`)
+            fetch(`/company/${companyId}/decrypt-urls`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
                         renderDecryptedUrls(data.urls);
                         btn.style.display = 'none';
                     } else {
-                        alert(data.message);
+                        alert(data.message || 'Failed to decrypt URLs.');
                         btn.innerHTML = '<i data-lucide="eye" class="h-3 w-3 inline-block"></i> Decrypt / View URLs';
                         btn.disabled = false;
                         lucide.createIcons();
@@ -523,15 +531,23 @@
         function renderDecryptedUrls(urls) {
             const container = document.getElementById('urls-configuration');
             container.innerHTML = '';
-            
-            document.getElementById('no_of_urls').value = urls.length;
+
+            // Convert object with keys to array
+            const urlsArray = [];
+            if (urls && typeof urls === 'object') {
+                Object.keys(urls).forEach(key => {
+                    urlsArray.push(urls[key]);
+                });
+            }
+
+            document.getElementById('no_of_urls').value = urlsArray.length;
             document.getElementById('urls-section').classList.remove('hidden');
             document.getElementById('urls_loaded').value = '1';
-            
-            urls.forEach((urlData, idx) => {
+
+            urlsArray.forEach((urlData, idx) => {
                 const urlDiv = document.createElement('div');
                 urlDiv.className = 'p-3 border border-gray-200 rounded bg-gray-50 url-block relative';
-                
+
                 let fieldsHtml = '';
                 if (urlData.fields && Array.isArray(urlData.fields)) {
                     urlData.fields.forEach((f, fIdx) => {
@@ -566,8 +582,19 @@
                 `;
                 container.appendChild(urlDiv);
             });
-            urlIndexCounter = urls.length;
+            urlIndexCounter = urlsArray.length;
             lucide.createIcons();
         }
+
+        // Close password modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closePasswordModal();
+            }
+        });
+
+
     </script>
+
+
 @endsection

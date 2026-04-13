@@ -38,6 +38,7 @@
                             <th>SN.</th>
                             <th>Company Code</th>
                             <th>Name</th>
+                            <th>Disti Count</th>
                             <th>Contact Name</th>
                             <th>Mobile</th>
                             <th>Email</th>
@@ -52,6 +53,12 @@
                                 <td>{{ $companies->firstItem() + $sn }}</td>
                                 <td>{{ $company->pid }}</td>
                                 <td>{{ $company->name }}</td>
+                                <td class="text-center">
+                                    <a href="{{ route('distributors.index', ['company' => $company->pid]) }}"
+                                       class="inline-flex items-center px-3 py-0 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 hover:bg-blue-200 transition cursor-pointer">
+                                        {{ $company->distributors_count }}
+                                    </a>
+                                </td>
                                 <td>{{ $company->contact_name }}</td>
                                 <td>{{ $company->mobile }}</td>
                                 <td>{{ $company->email }}</td>
@@ -76,7 +83,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-3 text-center text-gray-500 text-xs">No companies found</td>
+                                <td colspan="10" class="px-3 text-center text-gray-500 text-xs">No companies found</td>
                             </tr>
                         @endforelse
                     </tbody>

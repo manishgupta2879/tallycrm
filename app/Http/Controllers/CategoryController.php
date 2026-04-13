@@ -25,8 +25,8 @@ class CategoryController extends Controller
             });
         }
 
-        $categorys = $query->paginate(20);
-        
+        $categorys = $query->paginate(25);
+
         return view('category.index', compact('categorys'));
     }
 

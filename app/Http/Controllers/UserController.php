@@ -37,7 +37,7 @@ class UserController extends Controller
             });
         }
 
-        $users = $query->paginate(20);
+        $users = $query->paginate(25);
 
         return view('users.index', compact('users'));
     }
@@ -66,7 +66,7 @@ class UserController extends Controller
         try {
             $data = $request->validated();
             $data['status'] = $request->filled('status');
-            
+
             $this->userService->createUser($data);
 
             return redirect()->route('users.index')->with('success', 'User created successfully.');

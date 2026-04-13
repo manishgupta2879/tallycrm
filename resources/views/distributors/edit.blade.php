@@ -1,6 +1,9 @@
 @extends('layouts.app', ['breadcrumb' => 'Distributor', 'breadcrumbRight' => 'Dashboard->Primary Setup->Distributor'])
 
 @section('content')
+    <!-- Include Unified Password Modal Component -->
+    @include('components.password-decrypt-modal')
+
     <div class="max-w-full">
 
         <div class="bg-white rounded shadow-sm border border-gray-200">
@@ -315,8 +318,9 @@
                                     @enderror
                                 </div>
                                 <div>
-                                    <button type="button" class="btn-primary mt-5" onclick="addContact()">
+                                    <button type="button" class="btn-primary mt-5 inline-flex items-center space-x-1" onclick="addContact()">
                                         <i data-lucide="plus" class="h-4 w-4"></i>
+                                        <span>Add Contact</span>
                                     </button>
                                 </div>
                             </div>
@@ -381,8 +385,9 @@
                                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                             @enderror
                                         </div>
-                                        <button type="button" class="btn-danger" onclick="removeContact(this)">
+                                        <button type="button" class="btn-danger inline-flex items-center space-x-1" onclick="removeContact(this)" title="Remove this contact">
                                             <i data-lucide="trash" class="h-4 w-4"></i>
+                                            <span>Remove</span>
                                         </button>
                                     </div>
                                 @endfor
@@ -603,40 +608,51 @@
                         </div>
                         <!-- Sync Information -->
                         <div class="mb-3">
-                            <p
-                                class="text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
-                                Sync Information
-                            </p>
-                            <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                            <div class="flex items-center justify-between text-xs font-semibold text-gray-600 mb-2 bg-gradient-to-r from-gray-200 to-gray-100 px-2 py-1">
+                                <p>Sync Information</p>
 
-
-                                <div class="col-span-3">
-                                    <label class="block text-gray-700 font-semibold text-xs mb-1">Sync URLs</label>
-                                    <div id="sync-urls-container" class="space-y-1">
-                                        @php
-                                            $syncurls = is_array($distributor->c_urls) ? $distributor->c_urls : [];
-                                            $count = max(1, count($syncurls));
-                                        @endphp
-                                        @for ($i = 0; $i < $count; $i++)
-                                            <div class="flex items-center space-x-1 sync-url-row">
-                                                <input type="text" name="sync_urls[]"
-                                                    value="{{ old('sync_urls.' . $i, $syncurls[$i] ?? '') }}"
-                                                    class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                                    placeholder="https://example.com/api">
-                                                @if ($i === 0)
-                                                    <button type="button" class="btn-primary px-2 py-1 rounded"
-                                                        onclick="addSyncUrl()">
-                                                        <i data-lucide="plus" class="h-3.5 w-3.5"></i>
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="btn-danger px-2 py-1 rounded"
-                                                        onclick="removeSyncUrl(this)">
-                                                        <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
-                                                    </button>
-                                                @endif
-                                            </div>
+                                @if(empty(old('sync_urls')) && !empty($distributor->getRawOriginal('c_urls')) && old('urls_loaded', '0') !== '1')
+                                    <button type="button" id="decrypt-urls-btn" class="btn-primary py-0.5 px-2 text-[10px] flex items-center gap-1" onclick="decryptDistributorUrls({{ $distributor->id }})">
+                                        <i data-lucide="eye" class="h-3 w-3"></i> Decrypt / View URLs
+                                    </button>
+                                @endif
+                            </div>
+                            <div id="sync-urls-section" class="{{ empty(old('sync_urls')) && !empty($distributor->getRawOriginal('c_urls')) && old('urls_loaded', '0') !== '1' ? 'hidden' : '' }}">
+                                <input type="hidden" name="urls_loaded" id="urls_loaded" value="{{ old('urls_loaded', empty($distributor->getRawOriginal('c_urls')) ? '1' : '0') }}">
+                                <div class="mb-2">
+                                    <label class="block text-gray-700 font-semibold text-xs mb-1">No of Sync URLs</label>
+                                    <select id="no_of_sync_urls_dropdown" name="no_of_sync_urls"
+                                        class="w-1/4 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        onchange="generateSyncUrlInputs()">
+                                        <option value="0">-- Select Count --</option>
+                                        @for ($i = 1; $i <= 10; $i++)
+                                            <option value="{{ $i }}" {{ old('no_of_sync_urls', $distributor->no_of_sync_urls) == $i ? 'selected' : '' }}>
+                                                {{ $i }}</option>
                                         @endfor
-                                    </div>
+                                    </select>
+                                    @error('no_of_sync_urls')
+                                        <p class="text-red-500 text-[10px] mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div id="sync-urls-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @php
+                                        $oldUrls = old('sync_urls');
+                                        if (is_null($oldUrls) && old('urls_loaded', '0') === '1') {
+                                            $oldUrls = is_array($distributor->c_urls) ? $distributor->c_urls : [];
+                                        }
+                                        $oldUrls = $oldUrls ?? [];
+                                    @endphp
+                                    @foreach($oldUrls as $idx => $url)
+                                        <div class="p-2 border border-gray-200 rounded bg-gray-50 sync-url-block relative">
+                                            <label class="block text-gray-700 font-semibold text-[10px] mb-1">Sync URL {{ $idx + 1 }}</label>
+                                            <input type="text" name="sync_urls[]" value="{{ is_string($url) ? $url : '' }}"
+                                                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                                placeholder="https://example.com/api">
+                                            @error('sync_urls.'.$idx)
+                                                <p class="text-red-500 text-[10px] mt-0.5">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -873,25 +889,111 @@
 
         // ─── Sync URL Rows ──────────────────────────────────────────────────────
 
-        function addSyncUrl() {
+        function generateSyncUrlInputs() {
+            const count = parseInt(document.getElementById('no_of_sync_urls_dropdown').value);
             const container = document.getElementById('sync-urls-container');
-            const div = document.createElement('div');
-            div.className = "flex items-center space-x-1 sync-url-row";
-            div.innerHTML = `
-                                        <input type="text" name="sync_urls[]"
-                                            class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                            placeholder="https://example.com/api">
-                                        <button type="button" class="btn-danger px-2 py-1 rounded"
-                                            onclick="removeSyncUrl(this)">
-                                            <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
-                                        </button>
-                                    `;
-            container.appendChild(div);
-            lucide.createIcons();
+            const currentBlocks = container.querySelectorAll('.sync-url-block');
+            const currentCount = currentBlocks.length;
+
+            if (count < currentCount) {
+                if (!confirm(`Are you sure you want to remove ${currentCount - count} Sync URL(s)?`)) {
+                    document.getElementById('no_of_sync_urls_dropdown').value = currentCount;
+                    return;
+                }
+                for (let i = currentCount - 1; i >= count; i--) {
+                    currentBlocks[i].remove();
+                }
+            } else if (count > currentCount) {
+                for (let i = currentCount; i < count; i++) {
+                    const div = document.createElement('div');
+                    div.className = "p-2 border border-gray-200 rounded bg-gray-50 sync-url-block relative";
+                    div.innerHTML = `
+                        <label class="block text-gray-700 font-semibold text-[10px] mb-1">Sync URL ${i + 1}</label>
+                        <input type="text" name="sync_urls[]"
+                            class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                            placeholder="https://example.com/api">
+                    `;
+                    container.appendChild(div);
+                }
+            }
         }
 
-        function removeSyncUrl(button) {
-            button.closest('.sync-url-row').remove();
+        // ─── Decrypt Distributor URLs ──────────────────────────────────────────
+
+        function decryptDistributorUrls(distributorId) {
+            // Show password modal with distributor decrypt callback
+            showPasswordModal('distributor', distributorId, decryptDistributorUrlsAfterValidation);
+        }
+
+        function decryptDistributorUrlsAfterValidation(distributorId) {
+            const btn = document.getElementById('decrypt-urls-btn');
+            btn.innerHTML = `
+                <svg class="animate-spin h-3 w-3 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg> Decrypting...`;
+            btn.disabled = true;
+
+            fetch(`/distributor/${distributorId}/decrypt-urls`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        renderDecryptedDistributorUrls(data.urls);
+                        btn.style.display = 'none';
+                    } else {
+                        alert(data.message || 'Failed to decrypt URLs.');
+                        btn.innerHTML = '<i data-lucide="eye" class="h-3 w-3 inline-block"></i> Decrypt / View URLs';
+                        btn.disabled = false;
+                        lucide.createIcons();
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('An error occurred while decrypting URLs.');
+                    btn.innerHTML = '<i data-lucide="eye" class="h-3 w-3 inline-block"></i> Decrypt / View URLs';
+                    btn.disabled = false;
+                    lucide.createIcons();
+                });
+        }
+
+        function renderDecryptedDistributorUrls(urls) {
+            const container = document.getElementById('sync-urls-container');
+            container.innerHTML = '';
+
+            // Convert object with keys to array
+            const urlsArray = [];
+            if (urls && typeof urls === 'object') {
+                Object.keys(urls).forEach(key => {
+                    urlsArray.push(urls[key]);
+                });
+            }
+
+            // Populate the inputs
+            urlsArray.forEach((url, idx) => {
+                const urlDiv = document.createElement('div');
+                urlDiv.className = 'p-2 border border-gray-200 rounded bg-gray-50 sync-url-block relative';
+                urlDiv.innerHTML = `
+                    <label class="block text-gray-700 font-semibold text-[10px] mb-1">Sync URL ${idx + 1}</label>
+                    <input type="text" name="sync_urls[]"
+                        value="${url || ''}"
+                        class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-600"
+                        placeholder="https://example.com/api">
+                `;
+                container.appendChild(urlDiv);
+            });
+
+            // Update dropdown value
+            document.getElementById('no_of_sync_urls_dropdown').value = urlsArray.length;
+
+            // Show the sync-urls-section and set urls_loaded flag
+            const section = document.getElementById('sync-urls-section');
+            if (section) {
+                section.classList.remove('hidden');
+            }
+            document.getElementById('urls_loaded').value = '1';
+
+            lucide.createIcons();
         }
     </script>
+
 @endsection

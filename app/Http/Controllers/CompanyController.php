@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
+use App\Http\Requests\ValidateDecryptPasswordRequest;
 use App\Services\CompanyService; // Added
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Gate;
+use Carbon\Carbon;
 
 class CompanyController extends Controller
 {
@@ -29,8 +31,9 @@ class CompanyController extends Controller
         $search = $request->get('search', '');
 
         $companies = Company::search($search)
+            ->withCount('distributors')
             ->orderBy('name')
-            ->paginate(15)
+            ->paginate(25)
             ->withQueryString();
 
         return view('companies.index', compact('companies'));
@@ -86,8 +89,19 @@ class CompanyController extends Controller
         }
     }
 
+    public function validateDecryptPassword(ValidateDecryptPasswordRequest $request, Company $company)
+    {
+        Gate::authorize('company.edit');
+        if (!$request->validatePassword()) {
+            return response()->json(['success' => false, 'message' => 'Invalid password.'], 403);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Password validated successfully.']);
+    }
+
     /**
      * Decrypt and return the URLs.
+     * This should only be called after password validation.
      */
     public function decryptUrls(Company $company)
     {
@@ -101,9 +115,15 @@ class CompanyController extends Controller
                 $urls = json_decode(Crypt::decryptString($urls), true);
             }
 
-            return response()->json(['success' => true, 'urls' => $urls ?? []]);
+            // Ensure we return an array/object, not null
+            if (empty($urls)) {
+                return response()->json(['success' => true, 'urls' => []]);
+            }
+
+            return response()->json(['success' => true, 'urls' => $urls]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to decrypt URLs ('. $e->getMessage() .').'], 400);
+            \Log::error('URL Decryption Error for Company ' . $company->id . ': ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to decrypt URLs. Please try again later.'], 400);
         }
     }
 

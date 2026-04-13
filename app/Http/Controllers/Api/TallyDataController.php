@@ -26,6 +26,9 @@ class TallyDataController extends Controller
     {
         $payload = $request->json()->all();
 
+        // Clean the payload: convert all string "null" values to actual null
+        $payload = $this->cleanNullStrings($payload);
+
         if (empty($payload['masterdata_upload_request'])) {
             return response()->json(['success' => false, 'message' => 'Empty payload or missing masterdata_upload_request'], 400);
         }
@@ -437,6 +440,55 @@ class TallyDataController extends Controller
             $row['p' . $i] = $model->{'p' . $i};
         }
         return $row;
+    }
+
+    /**
+     * Recursively scan and convert all string "null" values to actual null in the payload.
+     * Handles nested arrays and objects at any depth.
+     */
+    private function cleanNullStrings($data)
+    {
+        if (is_array($data)) {
+            $cleaned = [];
+            foreach ($data as $key => $value) {
+                if (is_array($value) || is_object($value)) {
+                    // Recursively clean nested arrays and objects
+                    $cleaned[$key] = $this->cleanNullStrings($value);
+                } elseif ($value === 'null' || $value === 'NULL') {
+                    // Convert string "null" to actual null
+                    $cleaned[$key] = null;
+                } elseif (is_string($value) && trim($value) === '') {
+                    // Convert empty strings to null
+                    $cleaned[$key] = null;
+                } else {
+                    $cleaned[$key] = $value;
+                }
+            }
+            return $cleaned;
+        } elseif (is_object($data)) {
+            // Handle objects
+            $cleaned = new \stdClass();
+            foreach ((array) $data as $key => $value) {
+                if (is_array($value) || is_object($value)) {
+                    $cleaned->{$key} = $this->cleanNullStrings($value);
+                } elseif ($value === 'null' || $value === 'NULL') {
+                    $cleaned->{$key} = null;
+                } elseif (is_string($value) && trim($value) === '') {
+                    $cleaned->{$key} = null;
+                } else {
+                    $cleaned->{$key} = $value;
+                }
+            }
+            return $cleaned;
+        } else {
+            // Handle scalar values
+            if ($data === 'null' || $data === 'NULL') {
+                return null;
+            } elseif (is_string($data) && trim($data) === '') {
+                return null;
+            }
+            return $data;
+        }
     }
 
     /**

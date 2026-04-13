@@ -26,11 +26,6 @@ class StoreCompanyRequest extends FormRequest
         return [
             'pid' => 'required|string|max:50|unique:companies,pid',
             'name' => 'required|string|max:255',
-            'contact_name' => 'required|string|max:255',
-            'designation' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'mobile' => 'required|string|max:20',
-            'territory' => 'required|string|max:500',
             'status' => 'required|in:Active,Inactive',
             'd_types' => 'nullable|array',
             'd_parameter' => 'nullable|array',

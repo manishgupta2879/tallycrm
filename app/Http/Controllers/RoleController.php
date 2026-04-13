@@ -29,7 +29,7 @@ class RoleController extends Controller
         // Count users where role_id matches this role's id
         $query->selectRaw('roles.*, (SELECT COUNT(*) FROM users WHERE users.role_id = roles.id) as users_count');
 
-        $roles = $query->paginate(20);
+        $roles = $query->paginate(25);
 
         return view('roles.index', compact('roles'));
     }
@@ -52,7 +52,7 @@ class RoleController extends Controller
         try {
             $data = $request->only(['name', 'slug']);
             $data['permissions'] = $request->input('permissions', []);
-            
+
             $this->roleService->createRole($data);
 
             return redirect()->route('roles.index')->with('success', 'Role created successfully.');

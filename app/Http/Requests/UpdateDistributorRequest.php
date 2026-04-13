@@ -28,9 +28,9 @@ class UpdateDistributorRequest extends FormRequest
         $id = $this->route('distributor'); // Assuming 'distributor' as route param or 'id'
 
         return [
-            'code' => 'required|string|max:32|unique:distributors,code,' . $id,
+            'code' => 'required|string|max:50|unique:distributors,code,' . $id,
             'name' => 'required|string|max:255',
-            'company_code' => 'required|string|max:32',
+            'company_code' => 'required|string|max:50',
             'type' => 'required|string|max:32',
             'address' => 'nullable|string',
             'country' => 'nullable|string|max:20',

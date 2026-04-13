@@ -26,7 +26,7 @@ class AdditionalOpportunityController extends Controller
             });
         }
         $query->with('category'); // Eager load category relationship
-        $AdditionalOpportunites = $query->paginate(20);
+        $AdditionalOpportunites = $query->paginate(25);
         return view('additional-opportunity.index', compact('AdditionalOpportunites'));
     }
 

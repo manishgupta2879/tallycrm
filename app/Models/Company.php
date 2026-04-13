@@ -34,4 +34,20 @@ class Company extends Model
         'd_parameter' => 'array',
         'c_urls' => 'encrypted:array',
     ];
+
+    /**
+     * Get the distributors for this company.
+     */
+    public function distributors()
+    {
+        return $this->hasMany(Distributor::class, 'company_code', 'pid');
+    }
+
+    /**
+     * Get the count of distributors for this company.
+     */
+    public function distributorsCount()
+    {
+        return $this->distributors()->count();
+    }
 }

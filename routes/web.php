@@ -34,9 +34,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('additional-opportunities', AdditionalOpportunityController::class);
     // Company Management Routes
     Route::resource('companies', CompanyController::class);
-    Route::get('companies/{company}/decrypt-urls', [CompanyController::class, 'decryptUrls'])->name('companies.decrypt-urls');
+    Route::post('company/{company}/validate-decrypt-password', [CompanyController::class, 'validateDecryptPassword'])->name('companies.validate-decrypt-password');
+    Route::get('company/{company}/decrypt-urls', [CompanyController::class, 'decryptUrls'])->name('companies.decrypt-urls');
+
     // Distributor Management Routes — explicit routes MUST be registered before resource() to avoid {distributor} wildcard conflicts
+    Route::post('distributor/{distributor}/validate-decrypt-password', [DistributorController::class, 'validateDecryptPassword'])->name('distributors.validate-decrypt-password');
+    Route::get('distributor/{distributor}/decrypt-urls', [DistributorController::class, 'decryptUrls'])->name('distributors.decrypt-urls');
     Route::get('/distributors/get-company-details/{pid}', [DistributorController::class, 'getCompanyDetails'])->name('distributors.getCompanyDetails');
+    Route::get('/distributors/by-serial', [DistributorController::class, 'showBySerial'])->name('distributors.showBySerial');
     Route::get('/distributors/geo/regions/{countryPid}', [DistributorController::class, 'getRegions'])->name('distributors.geo.regions');
     Route::get('/distributors/geo/states/{regionPid}', [DistributorController::class, 'getStates'])->name('distributors.geo.states');
     Route::get('/distributors/geo/cities/{statePid}', [DistributorController::class, 'getCities'])->name('distributors.geo.cities');

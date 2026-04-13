@@ -1,7 +1,7 @@
 @extends('layouts.app', ['breadcrumb' => 'Profile', 'breadcrumbRight' => 'Dashboard -> Profile'])
 
 @section('content')
-    <div class="p-4 max-w-full">
+    <div class="max-w-full">
         <div class="max-w-7xl mx-auto space-y-6">
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
